@@ -1,0 +1,6 @@
+{
+  "name": "EduPlop",
+  "description": "Página promocional para EduPlop, destacando la facilidad de uso, integración de IA, retiro seguro, comunicación programable, y comunidad escolar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
