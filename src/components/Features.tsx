@@ -58,6 +58,29 @@ export default function Features() {
     }
   };
 
+  // Sophisticated Framer Motion variants for cascading card entry
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1], // Premium cubic-bezier transition
+        staggerChildren: 0.12,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: "easeOut" },
+    },
+  };
+
   return (
     <section id="features" className="py-20 bg-white border-y border-rose-50/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -78,48 +101,48 @@ export default function Features() {
           {items.map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              variants={cardVariants}
               className="flex flex-col justify-between rounded-3xl border border-slate-100 bg-coral-50/30 p-6 sm:p-8 hover:border-coral-150 transition-all hover:bg-coral-50/50 group"
             >
               <div className="space-y-4">
                 {/* Icon & Badge Row */}
-                <div className="flex items-center justify-between">
+                <motion.div variants={itemVariants} className="flex items-center justify-between">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-100 group-hover:scale-105 transition-transform duration-200">
                     {renderIcon(item.icon)}
                   </div>
                   <span className="inline-flex items-center rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-coral-600 border border-coral-200/50 shadow-2xs">
                     {item.badge}
                   </span>
-                </div>
+                </motion.div>
 
                 {/* Titling */}
-                <div className="space-y-1">
+                <motion.div variants={itemVariants} className="space-y-1">
                   <h3 className="text-xl font-bold text-slate-900 group-hover:text-coral-600 transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-xs font-semibold text-coral-500 uppercase tracking-widest">
                     {item.subtitle}
                   </p>
-                </div>
+                </motion.div>
 
                 {/* Description */}
-                <p className="text-sm leading-relaxed text-slate-600">
+                <motion.p variants={itemVariants} className="text-sm leading-relaxed text-slate-600">
                   {item.description}
-                </p>
+                </motion.p>
               </div>
 
               {/* Benefit Footer */}
-              <div className="mt-6 pt-4 border-t border-slate-100 bg-white/40 -mx-6 -mb-6 px-6 pb-6 rounded-b-3xl">
+              <motion.div variants={itemVariants} className="mt-6 pt-4 border-t border-slate-100 bg-white/40 -mx-6 -mb-6 px-6 pb-6 rounded-b-3xl">
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Beneficio Clave:
                 </span>
                 <p className="text-xs font-medium text-slate-700 leading-normal">
                   {item.benefit}
                 </p>
-              </div>
+              </motion.div>
 
             </motion.div>
           ))}

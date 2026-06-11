@@ -491,14 +491,21 @@ export default function AppScreenshots() {
                             <p className="text-[8px] text-slate-500">Validez: Jueves 4 de Jun</p>
                           </div>
 
-                          {/* Replicate QR pattern using neat flex layout */}
-                          <div className="h-8 w-8 bg-slate-900 shrink-0 p-1 rounded-sm flex flex-wrap gap-0.5">
+                          {/* Replicate QR pattern using neat flex layout with active laser scanner line */}
+                          <div className="h-8 w-8 bg-slate-900 shrink-0 p-1 rounded-sm flex flex-wrap gap-0.5 relative overflow-hidden">
                             <div className="w-2 h-2 bg-white rounded-2xs"></div>
                             <div className="w-2 h-2 bg-white rounded-2xs"></div>
                             <div className="w-1.5 h-1.5 bg-indigo-500"></div>
                             <div className="w-1.5 h-1.5 bg-slate-100"></div>
                             <div className="w-2 h-2 bg-white rounded-2xs"></div>
                             <div className="w-2 h-2 bg-white rounded-2xs"></div>
+                            
+                            {/* Scanning moving line */}
+                            <motion.div
+                              animate={{ top: ["5%", "85%", "5%"] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                              className="absolute left-0 right-0 h-0.5 bg-emerald-400 shadow-[0_0_4px_#34d399] z-10 pointer-events-none"
+                            />
                           </div>
                         </div>
                       </motion.div>
@@ -521,15 +528,25 @@ export default function AppScreenshots() {
                           </div>
                         </div>
 
-                        <div className="bg-white p-3 rounded-2xl border border-slate-150 shadow-3xs space-y-2">
-                          <p className="text-[10px] text-slate-800">
+                        <div className="bg-white p-3 rounded-2xl border border-slate-150 shadow-3xs space-y-2 relative overflow-hidden">
+                          {/* Pulsing radar scanner ripple effect overlay representing movement */}
+                          <div className="absolute right-3 top-3 w-8 h-8 rounded-full border border-indigo-100/60 flex items-center justify-center pointer-events-none">
+                            <motion.div
+                              animate={{ scale: [1, 2.2], opacity: [0.7, 0] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                              className="w-4 h-4 rounded-full border border-indigo-500 absolute"
+                            />
+                            <div className="w-3 h-3 rounded-full bg-indigo-50 flex items-center justify-center text-[8px]">📷</div>
+                          </div>
+
+                          <p className="text-[10px] text-slate-800 pr-6">
                             Hola <strong>Doc. Pérez</strong>. Para entregar un alumno en la salida, escaneá el pase digital que muestra la familia.
                           </p>
 
                           <button 
                             type="button"
                             onClick={() => alert("Simulación: Abriendo escáner de cámara integrado desde el app de docente liderado por firmas Ed25519.")}
-                            className="w-full py-2.5 rounded-xl bg-indigo-605 text-white bg-indigo-600 hover:bg-indigo-700 text-[10px] font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                            className="w-full py-2.5 rounded-xl bg-indigo-605 text-white bg-indigo-600 hover:bg-indigo-700 text-[10px] font-bold flex items-center justify-center gap-1.5 cursor-pointer relative overflow-hidden"
                           >
                             <Camera className="h-3.5 w-3.5" />
                             Escandear pase de retiro
@@ -674,9 +691,22 @@ export default function AppScreenshots() {
                           <div className="px-2 py-1 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[7px] text-slate-400 font-sans">
                             <button 
                               onClick={handleLike} 
-                              className="font-bold text-slate-600 flex items-center gap-0.5 hover:text-red-500 transition cursor-pointer"
+                              className="font-bold text-slate-600 flex items-center gap-1 hover:text-red-500 transition cursor-pointer text-[7.5px]"
                             >
-                              {hasLiked ? "❤️" : "🤍"} <span className="font-extrabold">{likesCount}</span>
+                              <motion.span
+                                animate={{
+                                  scale: hasLiked ? [1, 1.35, 1] : [1, 1.1, 1]
+                                }}
+                                transition={{
+                                  duration: hasLiked ? 0.4 : 2,
+                                  repeat: hasLiked ? 0 : Infinity,
+                                  ease: "easeInOut"
+                                }}
+                                className="inline-block"
+                              >
+                                {hasLiked ? "❤️" : "🤍"}
+                              </motion.span>
+                              <span className="font-extrabold text-[7px]">{likesCount}</span>
                             </button>
                             <span>{comments.length} comentarios</span>
                           </div>
@@ -713,7 +743,17 @@ export default function AppScreenshots() {
                 </div>
 
                 {/* Floating IA assistant widget representation inside phone */}
-                <div className="relative z-10 shrink-0">
+                <motion.div 
+                  animate={{
+                    y: [0, -3, 0]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="relative z-10 shrink-0"
+                >
                   <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-1.5 rounded-xl flex items-center justify-between text-[10px] shadow-md shadow-indigo-600/20">
                     <span className="flex items-center gap-1 font-semibold">
                       <Sparkles className="h-3 w-3 animate-pulse text-amber-300" />
@@ -723,7 +763,7 @@ export default function AppScreenshots() {
                       Gemini
                     </span>
                   </div>
-                </div>
+                </motion.div>
 
               </div>
             </div>

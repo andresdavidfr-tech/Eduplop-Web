@@ -107,6 +107,45 @@ export default function Hero({ onScrollTo }: HeroProps) {
             <div className="absolute -top-4 -right-4 w-72 h-72 rounded-full bg-amber-400/10 blur-3xl -z-10"></div>
             <div className="absolute -bottom-8 -left-8 w-72 h-72 rounded-full bg-coral-500/10 blur-3xl -z-10"></div>
 
+            {/* Continuous Floating Badge 1 (Top Left) */}
+            <motion.div
+              animate={{
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 4.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute -top-6 -left-6 bg-white/95 border border-coral-150 rounded-2xl p-2.5 shadow-md flex items-center gap-2 z-10 hidden sm:flex max-w-[140px] pointer-events-none select-none"
+            >
+              <div className="h-6 w-6 rounded-lg bg-coral-100 flex items-center justify-center text-[10px]">✨</div>
+              <div className="leading-tight text-left">
+                <span className="text-[10px] uppercase font-extrabold text-coral-600 block">IA Activa</span>
+                <span className="text-[9px] text-slate-500 font-medium font-sans">Tono Empático</span>
+              </div>
+            </motion.div>
+
+            {/* Continuous Floating Badge 2 (Bottom Right) */}
+            <motion.div
+              animate={{
+                y: [0, 10, 0],
+              }}
+              transition={{
+                duration: 5.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.6,
+              }}
+              className="absolute -bottom-6 -right-6 bg-white/95 border border-indigo-100 rounded-2xl p-2.5 shadow-md flex items-center gap-2 z-10 hidden sm:flex max-w-[155px] pointer-events-none select-none"
+            >
+              <div className="h-6 w-6 rounded-lg bg-indigo-50 flex items-center justify-center text-[11px]">🔒</div>
+              <div className="leading-tight text-left">
+                <span className="text-[10px] uppercase font-extrabold text-indigo-600 block">Retiro Seguro</span>
+                <span className="text-[9px] text-slate-500 font-medium font-sans">Código Dinámico</span>
+              </div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
