@@ -45,7 +45,7 @@ export default function Hero({ onScrollTo }: HeroProps) {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
             >
-              La plataforma que <span className="bg-gradient-to-r from-coral-500 to-amber-500 bg-clip-text text-transparent">conecta</span> con amor a colegios y familias.
+              Conectando con <span className="bg-gradient-to-r from-coral-500 to-amber-500 bg-clip-text text-transparent">inteligencia</span> la esencia de tu colegio con el corazón de las familias.
             </motion.h1>
 
             {/* Subtext */}
