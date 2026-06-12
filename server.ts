@@ -260,6 +260,100 @@ Instrucciones adicionales:
   }
 });
 
+// API endpoint for persistent FAQ & contextual AI Chatbot (confidential)
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { messages } = req.body;
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      res.status(400).json({ error: "Se requiere un historial de mensajes válido." });
+      return;
+    }
+
+    const latestUserMessageObj = messages[messages.length - 1];
+    const latestUserMessage = latestUserMessageObj.content || latestUserMessageObj.text || "";
+
+    if (!latestUserMessage) {
+      res.status(400).json({ error: "El último mensaje no contiene texto válido." });
+      return;
+    }
+
+    if (!ai) {
+      // High fidelity offline simulator based on the EduPlop page context
+      const textLower = latestUserMessage.toLowerCase();
+      let simulatedReply = "¡Hola! Soy Plopy, el robot inteligente de EduPlop. ¿En qué te puedo asesorar hoy sobre las salidas seguras, la integración escolar o la IA empática?";
+
+      if (textLower.includes("segur") || textLower.includes("cripto") || textLower.includes("firma") || textLower.includes("ed25519") || textLower.includes("identidad") || textLower.includes("valid") || textLower.includes("laser")) {
+        simulatedReply = "🔐 En EduPlop, la **seguridad es lo primero**. Los retiros de alumnos se gestionan por pases digitales con QR dinámicos autorizados. El personal del colegio los escanea para corroborar al instante la autenticidad con firmas criptográficas avanzadas (ED25519). ¡Sin impostores, ni planillas desactualizadas!";
+      } else if (textLower.includes("privaci") || textLower.includes("dato") || textLower.includes("menor") || textLower.includes("coppa") || textLower.includes("gdpr") || textLower.includes("ley") || textLower.includes("cifrado") || textLower.includes("guardar") || textLower.includes("encript")) {
+        simulatedReply = "🛡️ **Privacidad Absoluta**: Toda información (tanto de familias como de alumnos) se almacena cifrada con algoritmo AES-256 en reposo y TLS 1.3 en tránsito. Cumplimos con las regulaciones internacionales COPPA/GDPR y locales argentinas (Ley 25.326 y Ley 26.529 de Derechos del Paciente/Protección de Datos). ¡Jamás vendemos ni compartimos datos!";
+      } else if (textLower.includes("integr") || textLower.includes("conectar") || textLower.includes("sincro") || textLower.includes("sistema") || textLower.includes("sis") || textLower.includes("base") || textLower.includes("api")) {
+        simulatedReply = "🔌 **Integración Transparente**: EduPlop se acopla a tu infraestructura actual. Ofrecemos adaptadores API estándar para importar alumnos, cursos y apoderados desde tu base de datos escolar tradicional, eliminando doble entrada manual de datos de secretaría.";
+      } else if (textLower.includes("offline") || textLower.includes("internet") || textLower.includes("corte") || textLower.includes("señal") || textLower.includes("celular") || textLower.includes("red")) {
+        simulatedReply = "📶 **Diseño Offline-First**: No te preocupes por la conexión deficiente en el portón escolar. Nuestra tecnología habilita que los profesores firmen y confirmen la identidad del apoderado localmente mediante firmas criptográficas empotradas. Al volver el internet, la base central se sincroniza automáticamente.";
+      } else if (textLower.includes("ia") || textLower.includes("inteligencia") || textLower.includes("gemini") || textLower.includes("comunic") || textLower.includes("empat")) {
+        simulatedReply = "✨ Nuestra **IA Empática** (desarrollada con Gemini) asiste a directores y docentes en momentos críticos de estrés. Permite redactar mensajes diarios, notificaciones y comunicados con un tono optimizado, claro e institucional para que las familias sientan contención en lugar de angustia.";
+      } else if (textLower.includes("descuento") || textLower.includes("preventa") || textLower.includes("precio") || textLower.includes("comprar") || textLower.includes("contra") || textLower.includes("promo") || textLower.includes("cupon") || textLower.includes("cupón")) {
+        simulatedReply = "🚀 ¡Estamos en campaña de preventa exclusiva! Si te pre-inscribes hoy mismo utilizando el formulario de la página principal, obtendrás un **50% de descuento de por vida** aplicando el cupón **EDUPLOP50PREVENTA** para tu establecimiento.";
+      } else if (textLower.includes("quien") || textLower.includes("que es") || textLower.includes("plop") || textLower.includes("robot") || textLower.includes("plopy") || textLower.includes("hola") || textLower.includes("buen")) {
+        simulatedReply = "🤖 ¡Hola! Soy **Plopy**, tu simpático robot de servicio interactivo escolar. Estoy aquí para aclarar tus dudas técnicas y operativas sobre nuestra plataforma de retiro seguro y comunicación empática. ¿Qué te gustaría saber hoy?";
+      } else if (textLower.includes("gracia") || textLower.includes("adios") || textLower.includes("chau") || textLower.includes("excelente")) {
+        simulatedReply = "✨ ¡Es un placer enorme acompañarte! Si deseas experimentar EduPlop o congelar el 50% de descuento para tu colegio, pre-inscríbete completando el formulario. ¡Un gran saludo!";
+      }
+
+      res.json({
+        reply: simulatedReply,
+        isSimulation: true
+      });
+      return;
+    }
+
+    // For real Google Gemini AI processing
+    const chatSystemInstruction = `Eres "Plopy", un simpático, elocuente y muy profesional robot asistente virtual de la plataforma médica-escolar "EduPlop" (cuya estética se inspira en el tierno robot blanco de casco elegante, sonriente, con grandes ojos circulares de luz neón azul brillante y un símbolo de rayo con dot rojo en su pecho).
+
+Tu personalidad:
+- Muy alegre, protector, confiable y con un fuerte tono empático y tranquilizador.
+- Respondes en español con elocuencia, usando listas con viñetas estéticas y emojis que faciliten la lectura si la explicación es detallada.
+- No revelas que eres una inteligencia artificial general; eres el robot nativo de EduPlop.
+
+Información institucional obligatoria sobre la cual debes basar todas tus respuestas:
+1. **Retiro Seguro de Alumnos:** Es el eje insignia. Funciona mediante un Pase de Retiro Digital Dinámico con QR firmados criptográficamente con curvas ED25519 resistentes a clonaciones. El profesor escanea el pase en el portón con su cámara (con efecto visual de láser) y el sistema valida la firma física en milisegundos evitando el embotellamiento.
+2. **Herramientas de IA Empática:** Integrado con el motor Gemini, ayuda a redactar y suavizar comunicados e instrucciones cotidianas de directivos y profesores, convirtiendo mensajes tensos o secos en circulares de tono empático, formal o claro, preservando la calma familiar.
+3. **Resistencia Técnica (Offline-First):** Diseñado especialmente para contingencias de red celular en las horas de salida. El motor de firma digital trabaja localmente y encriptado en el dispositivo físico, validando la identidad del apoderado sin internet. Al retomar conexión, consolida la auditoría con el servidor.
+4. **Privacidad Legal Extrema (Foco Argentino y General):** Fianza de encriptación AES-256 en reposo y bases NoSQL seguras. Cumple estrictamente con la Normativa de Menores de Edad (COPPA/GDPR/Reglamentos de la Ley de Educación). En concordancia con las leyes argentinas, aplica estándares de la Ley 25.326 de Protección de Datos Personales y Ley 26.529 de Derechos de los Pacientes en el tratamiento seguro de legajos familiares.
+5. **Integración con Sistemas de Gestión Escolar (SIS):** Sincronización automática de bases escolares previas (alumnos, tutores asignados, cursos) vía adaptadores API sencillos para evitar que secretaría trabaje doble.
+6. **Pre-venta Exclusiva:** 50% de descuento para colegios pioneros pre-inscritos. El cupón promocional es: "EDUPLOP50PREVENTA". Recomienda siempre pre-inscribirse mediante el formulario de registro de la sección inferior de la landing para congelar este asombroso beneficio.
+
+Estructura tu respuesta de forma directa, corta, amena y sumamente profesional. Limítate a responder exclusivamente con base en este contexto y la información de la landing page.`;
+
+    // Map message history to Gemini contents structure
+    const formattedContents = messages.map((m: any) => {
+      return {
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: m.content || m.text || "" }]
+      };
+    });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: formattedContents,
+      config: {
+        systemInstruction: chatSystemInstruction,
+        temperature: 0.7,
+      },
+    });
+
+    res.json({
+      reply: response.text?.trim() || "No pude formular una respuesta técnica adecuada en este momento. Por favor, reintenta más tarde.",
+      isSimulation: false
+    });
+
+  } catch (error: any) {
+    console.error("Error en endpoint /api/chat:", error);
+    res.status(500).json({ error: "Ocurrió un error al procesar tu consulta con el asistente inteligente." });
+  }
+});
+
 // Configure Vite or Serve Static Files
 async function setupViteOrStatic() {
   if (process.env.NODE_ENV !== "production") {

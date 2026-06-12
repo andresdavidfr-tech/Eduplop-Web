@@ -9,6 +9,7 @@ import RegistrationForm from "./components/RegistrationForm";
 import FAQ from "./components/FAQ";
 import AdminConsole from "./components/AdminConsole";
 import Footer from "./components/Footer";
+import SmartBot from "./components/SmartBot";
 
 export default function App() {
   const [refreshLeadsTrigger, setRefreshLeadsTrigger] = useState(0);
@@ -169,6 +170,9 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Persistent Smart AI FAQ Chatbot */}
+      <SmartBot />
     </div>
   );
 }
