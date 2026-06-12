@@ -15,6 +15,7 @@ export default function Navbar({ onScrollTo }: NavbarProps) {
     { name: "Tour de la App", id: "app-tour" },
     { name: "Demostrador IA", id: "ai-playground" },
     { name: "Beneficios de Preventa", id: "pre-sale" },
+    { name: "Preguntas", id: "faq" },
   ];
 
   return (

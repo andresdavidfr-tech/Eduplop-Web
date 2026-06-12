@@ -3,9 +3,10 @@ import EduplopLogo from "./EduplopLogo";
 
 interface FooterProps {
   onScrollTo: (elementId: string) => void;
+  onClickAdmin?: () => void;
 }
 
-export default function Footer({ onScrollTo }: FooterProps) {
+export default function Footer({ onScrollTo, onClickAdmin }: FooterProps) {
   return (
     <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -93,9 +94,15 @@ export default function Footer({ onScrollTo }: FooterProps) {
         {/* Bottom copyright & information row */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} EduPlop Inc. Todos los derechos reservados.</p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 select-none">
             <Shield className="h-4 w-4 text-mint-500" />
-            <span>Encriptación de datos segura • Entorno protegido</span>
+            <span 
+              onClick={onClickAdmin}
+              className="cursor-pointer hover:text-slate-400 hover:underline transition duration-150"
+              title="Acceso de Administración Privado"
+            >
+              Encriptación de datos segura • Entorno protegido
+            </span>
           </div>
         </div>
 

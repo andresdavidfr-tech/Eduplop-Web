@@ -94,6 +94,115 @@ app.get("/api/leads", async (req, res) => {
   }
 });
 
+// API endpoint for generating a structured internal report (Confidential)
+app.get("/api/admin/report", async (req, res) => {
+  try {
+    await ensureLeadsFile();
+    const dataStr = await fs.readFile(LEADS_FILE_PATH, "utf-8");
+    const leads = JSON.parse(dataStr);
+
+    const totalLeads = leads.length;
+    const uniqueSchools = [...new Set(leads.map((l: any) => l.school))];
+    
+    // Role distribution
+    const roleStats = { parents: 0, teachers: 0, admins: 0 };
+    leads.forEach((l: any) => {
+      const lowerRole = (l.role || "").toLowerCase();
+      if (lowerRole.includes("familiar") || lowerRole.includes("apoderado")) {
+        roleStats.parents++;
+      } else if (lowerRole.includes("docente") || lowerRole.includes("educador")) {
+        roleStats.teachers++;
+      } else {
+        roleStats.admins++;
+      }
+    });
+
+    const schoolBreakdown = leads.reduce((acc: any, l: any) => {
+      if (l.school) {
+        acc[l.school] = (acc[l.school] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
+
+    let aiAnalysis = "";
+
+    if (ai && totalLeads > 0) {
+      try {
+        const leadBrief = leads.slice(-15).map((l: any) => `- Rol: ${l.role}, Colegio: ${l.school}, Mensaje: "${l.message || "Sin comentario"}"`).join("\n");
+        const analysisPrompt = `Analiza detalladamente este listado de leads de preventa interesados en la plataforma educativa "EduPlop" (una app con IA para comunicación fluida, salidas de alumnos ágiles y seguras):
+${leadBrief}
+
+Genera un reporte ejecutivo interno sumamente conciso en español (Markdown). Incluye:
+1. "Análisis de Mensajes y Necesidades Principales" (Cuáles son las mayores preocupaciones o expectativas que expresan los padres y directores en sus mensajes).
+2. "Estrategia de Conversión Recomendada" (Cómo el equipo comercial de EduPlop debe abordar a estos leads usando el beneficio del 50% de descuento).
+3. "Score de Viabilidad" (Calcula un score de viabilidad comercial de 1 a 10 basado en los cargos de las personas registradas).
+No incluyas introducciones ni saludos comerciales. Ve directo a los puntos indicados.`;
+
+        const response = await ai.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: analysisPrompt,
+        });
+        aiAnalysis = response.text?.trim() || "Análisis automático no disponible.";
+      } catch (aiErr) {
+        console.error("Gemini report error:", aiErr);
+        aiAnalysis = "Error al sintetizar el informe con Inteligencia Artificial. Se muestra informe estándar.";
+      }
+    }
+
+    if (!aiAnalysis) {
+      // High fidelity fallback text based on data
+      aiAnalysis = `### Análisis Automático de Demanda
+* **Necesidades estimadas:** Con ${totalLeads} registros, se evidencia preocupación central en la optimización de los momentos de retiro (salida de alumnos) y la agilidad de los comunicados cotidianos.
+* **Toma de Decisiones:** La presencia de ${roleStats.admins} perfiles directivos/administradores indica una alta probabilidad de penetración institucional B2B, ya que son los decisores de compras del software escolar.
+* **Recomendación Comercial:** Ofrecer webinars guiados a los ${uniqueSchools.length} colegios detectados, invitando a los ${roleStats.teachers} docentes pre-inscritos para que actúen como promotores internos en sus respectivos establecimientos.`;
+    }
+
+    // Compose cohesive markdown
+    const mdReport = `# INFORME DE INTELIGENCIA COMERCIAL - EDUPLOP 🚀
+*Generado automáticamente el ${timestamp} | Uso Interno Confidencial*
+
+---
+
+### 1. Métricas de Conversión y Embudo de Ventas
+* **Total Pre-inscritos:** **${totalLeads}** prospectos de alta intención.
+* **Colegios Únicos:** **${uniqueSchools.length}** establecimientos detectados en el sistema.
+* **Distribución de Roles Operativos:**
+  - 🏡 **Familias / Apoderados:** ${totalLeads > 0 ? Math.round((roleStats.parents / totalLeads) * 100) : 0}% (${roleStats.parents} leads)
+  - 🏫 **Docentes / Educadores:** ${totalLeads > 0 ? Math.round((roleStats.teachers / totalLeads) * 100) : 0}% (${roleStats.teachers} leads)
+  - 💼 **Directivos / Administradores de Colegio:** ${totalLeads > 0 ? Math.round((roleStats.admins / totalLeads) * 100) : 0}% (${roleStats.admins} leads)
+
+---
+
+### 2. Penetración Geográfica y Demanda por Establecimiento
+${Object.entries(schoolBreakdown).map(([sch, count]) => `- **${sch}**: ${count} pre-inscripciones registradas.`).join("\n") || "_No hay colegios registrados aún._"}
+
+---
+
+### 3. Síntesis Analítica de Negocio
+${aiAnalysis}
+
+---
+*Fin del Reporte Ejecutivo Interno - EduPlop Analytics Engine*`;
+
+    res.json({
+      success: true,
+      timestamp,
+      summary: {
+        totalLeads,
+        distinctSchools: uniqueSchools.length,
+        roleStats,
+      },
+      markdown: mdReport
+    });
+
+  } catch (error: any) {
+    console.error("Error al generar reporte administrativo:", error);
+    res.status(500).json({ error: "Ocurrió un error al compilar el informe interno." });
+  }
+});
+
 // API endpoint for AI Assisted communication
 app.post("/api/ai-assisted-communication", async (req, res) => {
   try {
