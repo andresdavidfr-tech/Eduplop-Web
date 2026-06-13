@@ -41,6 +41,74 @@ async function ensureLeadsFile() {
 }
 ensureLeadsFile();
 
+// Helper to forward a lead to a Google Form programmatically
+async function forwardToGoogleForm(lead: any) {
+  try {
+    const configPath = path.join(process.cwd(), "google-form-config.json");
+    let configStr = "";
+    try {
+      configStr = await fs.readFile(configPath, "utf-8");
+    } catch {
+      console.warn("⚠️ google-form-config.json not found, using empty default.");
+      return { success: false, reason: "Configuración no encontrada" };
+    }
+
+    const config = JSON.parse(configStr);
+
+    if (!config.enabled || !config.formUrl) {
+      console.log("[Google Form Sync] Desactivado o sin URL configurada.");
+      return { success: false, reason: "Inactivo" };
+    }
+
+    let submissionUrl = config.formUrl.trim();
+    if (submissionUrl.endsWith("/viewform")) {
+      submissionUrl = submissionUrl.replace(/\/viewform$/, "/formResponse");
+    } else if (submissionUrl.includes("/viewform?")) {
+      submissionUrl = submissionUrl.split("/viewform?")[0] + "/formResponse";
+    }
+
+    if (!submissionUrl.endsWith("/formResponse")) {
+      if (submissionUrl.endsWith("/")) {
+        submissionUrl = submissionUrl + "formResponse";
+      } else if (!submissionUrl.includes("formResponse")) {
+        submissionUrl = submissionUrl + "/formResponse";
+      }
+    }
+
+    const params = new URLSearchParams();
+    const entryMap = config.entryMap || {};
+
+    if (entryMap.name) params.append(entryMap.name, lead.name || "");
+    if (entryMap.role) params.append(entryMap.role, lead.role || "");
+    if (entryMap.email) params.append(entryMap.email, lead.email || "");
+    if (entryMap.school) params.append(entryMap.school, lead.school || "");
+    if (entryMap.phone) params.append(entryMap.phone, lead.phone || "");
+    if (entryMap.message) params.append(entryMap.message, lead.message || "");
+
+    console.log(`[Google Form Sync] Reenviando a Formulario: ${submissionUrl}`);
+
+    const response = await fetch(submissionUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) EduPlop Sync Service/1.0"
+      },
+      body: params.toString()
+    });
+
+    if (!response.ok) {
+      console.error(`[Google Form Sync Fail] Status: ${response.status} ${response.statusText}`);
+      return { success: false, status: response.status };
+    }
+
+    console.log("[Google Form Sync Success] ¡Sincronizado con Google Form exitosamente!");
+    return { success: true };
+  } catch (error: any) {
+    console.error("[Google Form Sync Error] Excepción fatal retransmitiendo lead:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 // API endpoint to post a lead
 app.post("/api/leads", async (req, res) => {
   try {
@@ -70,6 +138,11 @@ app.post("/api/leads", async (req, res) => {
     leads.push(newLead);
     await fs.writeFile(LEADS_FILE_PATH, JSON.stringify(leads, null, 2), "utf-8");
 
+    // Sincronizar en segundo plano de manera no bloqueante con Google Forms
+    forwardToGoogleForm(newLead).catch((err) => {
+      console.error("⚠️ Fallo en retransmisión asíncrona a Google Forms:", err);
+    });
+
     res.status(201).json({
       success: true,
       message: "¡Registro exitoso! Código de descuento enviado.",
@@ -91,6 +164,70 @@ app.get("/api/leads", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener leads:", error);
     res.status(500).json({ error: "Error al recuperar registros." });
+  }
+});
+
+// GET /api/admin/google-form-config - Obtener configuración de Google Forms
+app.get("/api/admin/google-form-config", async (req, res) => {
+  try {
+    const configPath = path.join(process.cwd(), "google-form-config.json");
+    const configStr = await fs.readFile(configPath, "utf-8");
+    const config = JSON.parse(configStr);
+    res.json(config);
+  } catch (error) {
+    console.error("Error al leer configuración de Google Form:", error);
+    res.status(500).json({ error: "No se pudo recuperar la configuración." });
+  }
+});
+
+// POST /api/admin/google-form-config - Actualizar configuración de Google Forms
+app.post("/api/admin/google-form-config", async (req, res) => {
+  try {
+    const { enabled, formUrl, entryMap } = req.body;
+    const configPath = path.join(process.cwd(), "google-form-config.json");
+    
+    const newConfig = {
+      enabled: !!enabled,
+      formUrl: formUrl || "",
+      entryMap: entryMap || {
+        name: "entry.1000001",
+        role: "entry.1000002",
+        email: "entry.1000003",
+        school: "entry.1000004",
+        phone: "entry.1000005",
+        message: "entry.1000006"
+      }
+    };
+
+    await fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), "utf-8");
+    res.json({ success: true, config: newConfig });
+  } catch (error) {
+    console.error("Error al guardar configuración de Google Form:", error);
+    res.status(500).json({ error: "No se pudo guardar la configuración." });
+  }
+});
+
+// POST /api/admin/google-form-test - Enviar lead de prueba al Google Form configurado
+app.post("/api/admin/google-form-test", async (req, res) => {
+  try {
+    const testLead = {
+      name: "Soporte de Pruebas (EduPlop)",
+      role: "Director / Sostenedor / Admin",
+      email: "andresdavidfr@gmail.com",
+      school: "Escuela de Prueba Integración",
+      phone: "+54 9 11 0000-0000",
+      message: "¡Excelente! La sincronización automática de EduPlop con mi Google Form funciona de maravillas. 🚀"
+    };
+
+    const status = await forwardToGoogleForm(testLead);
+    if (status.success) {
+      res.json({ success: true, message: "¡Sincronización de prueba enviada con éxito! Revisa tus respuestas de Google Form." });
+    } else {
+      res.status(400).json({ success: false, error: "La llamada a Google Forms falló. Verifica que el enlace del formulario sea correcto y público.", detail: status });
+    }
+  } catch (error: any) {
+    console.error("Error en test de Google Form:", error);
+    res.status(500).json({ error: "Error interno al ejecutar la prueba.", detail: error.message });
   }
 });
 
