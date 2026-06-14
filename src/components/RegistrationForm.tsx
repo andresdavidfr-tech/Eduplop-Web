@@ -270,7 +270,7 @@ export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps)
                     </button>
                   </div>
                   <p className="text-[10px] text-slate-400 leading-normal text-left">
-                    *Te hemos enviado un correo de bienvenida. Guarda este cupón bien; se aplicará al momento de dar de alta la licencia anual de tu colegio o contratar tu plan familiar.
+                    *Guarda este cupón; se aplicará al momento de dar de alta la licencia anual de tu colegio o contratar tu plan familiar.
                   </p>
                 </div>
 

@@ -352,7 +352,7 @@ export default function SmartBot() {
             <div className="bg-indigo-50/80 border-b border-indigo-100/50 px-4 py-2.5 flex items-start gap-2.5">
               <ShieldAlert className="h-4 w-4 text-indigo-505 shrink-0 mt-0.5" />
               <p className="text-[10px] text-indigo-950 font-medium leading-relaxed">
-                Asesor oficial de **EduPlop**. Protegido conforme a la ley argentina de seguridad 25.326/26.529.
+                Asesor oficial de <strong>EduPlop</strong>. Protegido conforme a la ley argentina de seguridad 25.326/26.529.
               </p>
             </div>
 

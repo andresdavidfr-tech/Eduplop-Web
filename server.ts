@@ -93,10 +93,13 @@ async function forwardToGoogleForm(lead: any) {
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) EduPlop Sync Service/1.0"
       },
-      body: params.toString()
+      body: params.toString(),
+      redirect: "follow"
     });
 
-    if (!response.ok) {
+    // Google Forms returns 200 on success (after redirect from formResponse)
+    // Also accept redirects (3xx) as success since that means the form received the data
+    if (!response.ok && response.status !== 302 && response.status !== 301) {
       console.error(`[Google Form Sync Fail] Status: ${response.status} ${response.statusText}`);
       return { success: false, status: response.status };
     }
@@ -278,7 +281,7 @@ Genera un reporte ejecutivo interno sumamente conciso en español (Markdown). In
 No incluyas introducciones ni saludos comerciales. Ve directo a los puntos indicados.`;
 
         const response = await ai.models.generateContent({
-          model: "gemini-3.5-flash",
+          model: "gemini-2.0-flash",
           contents: analysisPrompt,
         });
         aiAnalysis = response.text?.trim() || "Análisis automático no disponible.";
@@ -384,7 +387,7 @@ Instrucciones adicionales:
 
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-2.0-flash",
         contents: prompt,
       });
 
@@ -487,7 +490,7 @@ Estructura tu respuesta de forma directa, corta, amena y sumamente profesional. 
 
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
+        model: "gemini-2.0-flash",
         contents: formattedContents,
         config: {
           systemInstruction: chatSystemInstruction,
