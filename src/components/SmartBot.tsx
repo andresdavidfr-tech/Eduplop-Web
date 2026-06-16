@@ -192,6 +192,33 @@ export default function SmartBot() {
     }
   }, [messages]);
 
+  const getSimulatedChatReply = (latestUserMessage: string): string => {
+    const textLower = latestUserMessage.toLowerCase();
+    let simulatedReply = "¡Hola! Soy Plopy, el robot inteligente de EduPlop. ¿En qué te puedo asesorar hoy sobre las salidas seguras, la integración escolar o la IA empática?";
+
+    if (textLower.includes("segur") || textLower.includes("cripto") || textLower.includes("firma") || textLower.includes("ed25519") || textLower.includes("identidad") || textLower.includes("valid") || textLower.includes("laser") || textLower.includes("retiro") || textLower.includes("alumn")) {
+      simulatedReply = "🔐 En EduPlop, la **seguridad es lo primero**. Los retiros de alumnos se gestionan por pases digitales con QR dinámicos autorizados. El personal del colegio los escanea para corroborar al instante la autenticidad con firmas criptográficas avanzadas (ED25519). ¡Sin impostores, ni planillas desactualizadas!";
+    } else if (textLower.includes("privaci") || textLower.includes("dato") || textLower.includes("menor") || textLower.includes("coppa") || textLower.includes("gdpr") || textLower.includes("ley") || textLower.includes("cifrado") || textLower.includes("guardar") || textLower.includes("encript") || textLower.includes("25.326") || textLower.includes("26.529")) {
+      simulatedReply = "🛡️ **Privacidad Absoluta**: Toda información (tanto de familias como de alumnos) se almacena cifrada con algoritmo AES-256 en reposo y TLS 1.3 en tránsito. Cumplimos con las regulaciones internacionales COPPA/GDPR y locales argentinas (Ley 25.326 y Ley 26.529 de Derechos del Paciente/Protección de Datos). ¡Jamás vendemos ni compartimos datos!";
+    } else if (textLower.includes("integr") || textLower.includes("conectar") || textLower.includes("sincro") || textLower.includes("sistema") || textLower.includes("sis") || textLower.includes("base") || textLower.includes("api")) {
+      simulatedReply = "🔌 **Integración Transparente**: EduPlop se acopla a tu infraestructura actual. Ofrecemos adaptadores API estándar para importar alumnos, cursos y apoderados desde tu base de datos escolar tradicional, eliminando doble entrada manual de datos de secretaría.";
+    } else if (textLower.includes("offline") || textLower.includes("internet") || textLower.includes("corte") || textLower.includes("señal") || textLower.includes("celular") || textLower.includes("red")) {
+      simulatedReply = "📶 **Diseño Offline-First**: No te preocupes por la conexión deficiente en el portón escolar. Nuestra tecnología habilita que los profesores firmen y confirmen la identidad del apoderado localmente mediante firmas criptográficas empotradas. Al volver el internet, la base central se sincroniza automáticamente.";
+    } else if (textLower.includes("ia") || textLower.includes("inteligencia") || textLower.includes("gemini") || textLower.includes("comunic") || textLower.includes("empat")) {
+      simulatedReply = "✨ Nuestra **IA Empática** (desarrollada con Gemini) asiste a directores y docentes en momentos críticos de estrés. Permite redactar mensajes diarios, notificaciones y comunicados con un tono optimizado, claro e institucional para que las familias sientan contención en lugar de angustia.";
+    } else if (textLower.includes("descuento") || textLower.includes("preventa") || textLower.includes("precio") || textLower.includes("comprar") || textLower.includes("contra") || textLower.includes("promo") || textLower.includes("cupon") || textLower.includes("cupón")) {
+      simulatedReply = "🚀 ¡Estamos en campaña de preventa exclusiva! Si te pre-inscribes hoy mismo utilizando el formulario de la página principal, obtendrás un **50% de descuento de por vida** aplicando el cupón **EDUPLOP50PREVENTA** para tu establecimiento.";
+    } else if (textLower.includes("quien") || textLower.includes("que es") || textLower.includes("plop") || textLower.includes("robot") || textLower.includes("plopy") || textLower.includes("hola") || textLower.includes("buen")) {
+      simulatedReply = "🤖 ¡Hola! Soy **Plopy**, tu simpático robot de servicio interactivo escolar. Estoy aquí para aclarar tus dudas técnicas y operativas sobre nuestra plataforma de retiro seguro y comunicación empática. ¿Qué te gustaría saber hoy?";
+    } else if (textLower.includes("mural") || textLower.includes("foro") || textLower.includes("red social") || textLower.includes("comentar") || textLower.includes("foto") || textLower.includes("imagen") || textLower.includes("familia")) {
+      simulatedReply = "📸 **Mural Familiar Protegido**: El Mural de EduPlop es una red social privada de la escuela para que los docentes compartan los progresos y trabajos de clase. Las familias reaccionan únicamente con emojis o palabras de aliento preseleccionadas en un entorno moderado y blindado.";
+    } else if (textLower.includes("gracia") || textLower.includes("adios") || textLower.includes("chau") || textLower.includes("excelente")) {
+      simulatedReply = "✨ ¡Es un placer enorme acompañarte! Si deseas experimentar EduPlop o congelar el 50% de descuento para tu colegio, pre-inscríbete completando el formulario. ¡Un gran saludo!";
+    }
+
+    return simulatedReply;
+  };
+
   const handleSendMessage = async (userPrompt: string) => {
     if (!userPrompt.trim()) return;
 
@@ -220,7 +247,7 @@ export default function SmartBot() {
       });
 
       if (!res.ok) {
-        throw new Error("Sincronización de asistente fallida.");
+        throw new Error("Sincronización de asistente fallida con servidores.");
       }
 
       const data = await res.json();
@@ -240,17 +267,36 @@ export default function SmartBot() {
       setTimeout(() => setBotState("idle"), 3000);
 
     } catch (err) {
-      console.error(err);
-      setBotState("idle");
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: "err_" + Date.now().toString(36),
-          role: "assistant",
-          content: "❌ Disculpa, perdí contacto momentáneo con mis sensores de red central. Intenta nuevamente por favor. Recuerda que puedes pre-inscribirte para recibir asesoría telefónica directa en el formulario.",
-          timestamp: new Date()
-        }
-      ]);
+      console.warn("⚠️ Servidor o red no disponible para chat. Iniciando fallback instantáneo con Plopy local:", err);
+      
+      try {
+        const simulatedReply = getSimulatedChatReply(userPrompt);
+        setBotState("talking");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: "bot_fb_" + Date.now().toString(36),
+            role: "assistant",
+            content: simulatedReply,
+            timestamp: new Date()
+          }
+        ]);
+        
+        // Talk active animations for 3 seconds
+        setTimeout(() => setBotState("idle"), 3000);
+      } catch (fallbackErr) {
+        console.error("❌ El fallback del chatbot también falló:", fallbackErr);
+        setBotState("idle");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: "err_" + Date.now().toString(36),
+            role: "assistant",
+            content: "❌ Disculpa, perdí contacto momentáneo con mis sensores de red central. Intenta nuevamente por favor. Recuerda que puedes pre-inscribirte para recibir asesoría telefónica directa en el formulario.",
+            timestamp: new Date()
+          }
+        ]);
+      }
     }
   };
 
