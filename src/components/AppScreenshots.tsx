@@ -69,7 +69,7 @@ export default function AppScreenshots() {
         "Encriptación robusta de datos médicos, personales e identificadores.",
         "Separación total por salas y grados para evitar la visualización cruzada."
       ],
-      legalHighlight: "Cumple con la Ley Argentina 25.326 de Protección de Datos Personales. Sin rastreadores comerciales de terceros."
+      legalHighlight: "Cumple con los estándares más estrictos de Protección de Datos Personales y privacidad estudiantil continental. Sin rastreadores comerciales de terceros."
     },
     {
       id: "messages",
@@ -107,7 +107,7 @@ export default function AppScreenshots() {
         "Designa familiares de confianza de forma temporal o permanente.",
         "Añade observaciones como 'Salida anticipada' o 'Retiro por transporte escolar'."
       ],
-      legalHighlight: "Consistente con la Ley Argentina 26.529 de Derechos del Paciente y Autonomía Familiar en ámbito tutelar."
+      legalHighlight: "Garantiza el derecho a la privacidad familiar y la autonomía de tutoría del menor bajo estándares internacionales."
     },
     {
       id: "gatekeeper",
@@ -1081,12 +1081,12 @@ export default function AppScreenshots() {
                   </ul>
                 </div>
 
-                {/* Legal Framework integration (ARGENTINIAN LAW FOCUS) */}
+                {/* Legal Framework integration (PRIVACY & COMPLIANCE STANDARDS) */}
                 {screens[activeScreenIndex].legalHighlight && (
                   <div className="rounded-xl bg-slate-800/80 border border-slate-700/60 p-3.5 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-xs text-coral-400 font-bold">
                       <ShieldCheck className="h-4 w-4" />
-                      <span>Cumplimiento Legal Argentino</span>
+                      <span>Privacidad y Cumplimiento Legal</span>
                     </div>
                     <p className="text-[11px] text-slate-405 text-slate-400 leading-normal">
                       {screens[activeScreenIndex].legalHighlight}

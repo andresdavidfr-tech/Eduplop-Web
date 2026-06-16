@@ -194,29 +194,30 @@ export default function SmartBot() {
 
   const getSimulatedChatReply = (latestUserMessage: string): string => {
     const textLower = latestUserMessage.toLowerCase();
-    let simulatedReply = "¡Hola! Soy Plopy, el robot inteligente de EduPlop. ¿En qué te puedo asesorar hoy sobre las salidas seguras, la integración escolar o la IA empática?";
 
-    if (textLower.includes("segur") || textLower.includes("cripto") || textLower.includes("firma") || textLower.includes("ed25519") || textLower.includes("identidad") || textLower.includes("valid") || textLower.includes("laser") || textLower.includes("retiro") || textLower.includes("alumn")) {
-      simulatedReply = "🔐 En EduPlop, la **seguridad es lo primero**. Los retiros de alumnos se gestionan por pases digitales con QR dinámicos autorizados. El personal del colegio los escanea para corroborar al instante la autenticidad con firmas criptográficas avanzadas (ED25519). ¡Sin impostores, ni planillas desactualizadas!";
-    } else if (textLower.includes("privaci") || textLower.includes("dato") || textLower.includes("menor") || textLower.includes("coppa") || textLower.includes("gdpr") || textLower.includes("ley") || textLower.includes("cifrado") || textLower.includes("guardar") || textLower.includes("encript") || textLower.includes("25.326") || textLower.includes("26.529")) {
-      simulatedReply = "🛡️ **Privacidad Absoluta**: Toda información (tanto de familias como de alumnos) se almacena cifrada con algoritmo AES-256 en reposo y TLS 1.3 en tránsito. Cumplimos con las regulaciones internacionales COPPA/GDPR y locales argentinas (Ley 25.326 y Ley 26.529 de Derechos del Paciente/Protección de Datos). ¡Jamás vendemos ni compartimos datos!";
-    } else if (textLower.includes("integr") || textLower.includes("conectar") || textLower.includes("sincro") || textLower.includes("sistema") || textLower.includes("sis") || textLower.includes("base") || textLower.includes("api")) {
-      simulatedReply = "🔌 **Integración Transparente**: EduPlop se acopla a tu infraestructura actual. Ofrecemos adaptadores API estándar para importar alumnos, cursos y apoderados desde tu base de datos escolar tradicional, eliminando doble entrada manual de datos de secretaría.";
-    } else if (textLower.includes("offline") || textLower.includes("internet") || textLower.includes("corte") || textLower.includes("señal") || textLower.includes("celular") || textLower.includes("red")) {
-      simulatedReply = "📶 **Diseño Offline-First**: No te preocupes por la conexión deficiente en el portón escolar. Nuestra tecnología habilita que los profesores firmen y confirmen la identidad del apoderado localmente mediante firmas criptográficas empotradas. Al volver el internet, la base central se sincroniza automáticamente.";
-    } else if (textLower.includes("ia") || textLower.includes("inteligencia") || textLower.includes("gemini") || textLower.includes("comunic") || textLower.includes("empat")) {
-      simulatedReply = "✨ Nuestra **IA Empática** (desarrollada con Gemini) asiste a directores y docentes en momentos críticos de estrés. Permite redactar mensajes diarios, notificaciones y comunicados con un tono optimizado, claro e institucional para que las familias sientan contención en lugar de angustia.";
-    } else if (textLower.includes("descuento") || textLower.includes("preventa") || textLower.includes("precio") || textLower.includes("comprar") || textLower.includes("contra") || textLower.includes("promo") || textLower.includes("cupon") || textLower.includes("cupón")) {
-      simulatedReply = "🚀 ¡Estamos en campaña de preventa exclusiva! Si te pre-inscribes hoy mismo utilizando el formulario de la página principal, obtendrás un **50% de descuento de por vida** aplicando el cupón **EDUPLOP50PREVENTA** para tu establecimiento.";
-    } else if (textLower.includes("quien") || textLower.includes("que es") || textLower.includes("plop") || textLower.includes("robot") || textLower.includes("plopy") || textLower.includes("hola") || textLower.includes("buen")) {
-      simulatedReply = "🤖 ¡Hola! Soy **Plopy**, tu simpático robot de servicio interactivo escolar. Estoy aquí para aclarar tus dudas técnicas y operativas sobre nuestra plataforma de retiro seguro y comunicación empática. ¿Qué te gustaría saber hoy?";
-    } else if (textLower.includes("mural") || textLower.includes("foro") || textLower.includes("red social") || textLower.includes("comentar") || textLower.includes("foto") || textLower.includes("imagen") || textLower.includes("familia")) {
-      simulatedReply = "📸 **Mural Familiar Protegido**: El Mural de EduPlop es una red social privada de la escuela para que los docentes compartan los progresos y trabajos de clase. Las familias reaccionan únicamente con emojis o palabras de aliento preseleccionadas en un entorno moderado y blindado.";
-    } else if (textLower.includes("gracia") || textLower.includes("adios") || textLower.includes("chau") || textLower.includes("excelente")) {
-      simulatedReply = "✨ ¡Es un placer enorme acompañarte! Si deseas experimentar EduPlop o congelar el 50% de descuento para tu colegio, pre-inscríbete completando el formulario. ¡Un gran saludo!";
+    if (textLower.includes("segur") || textLower.includes("cripto") || textLower.includes("firma") || textLower.includes("ed25519") || textLower.includes("identidad") || textLower.includes("valid") || textLower.includes("laser") || textLower.includes("retiro") || textLower.includes("alumn") || textLower.includes("porton") || textLower.includes("portón") || textLower.includes("pase") || textLower.includes("qr")) {
+      return "🔐 En EduPlop, la **seguridad es lo primero**. Los retiros de alumnos se gestionan por pases digitales con QR dinámicos autorizados. El personal del colegio los escanea para corroborar al instante la autenticidad con firmas criptográficas avanzadas (ED25519). ¡Sin impostores, ni planillas desactualizadas!";
+    } else if (textLower.includes("privaci") || textLower.includes("dato") || textLower.includes("menor") || textLower.includes("coppa") || textLower.includes("gdpr") || textLower.includes("ley") || textLower.includes("cifrado") || textLower.includes("guardar") || textLower.includes("encript") || textLower.includes("salud")) {
+      return "🛡️ **Privacidad Absoluta**: Toda información (tanto de familias como de alumnos) se almacena cifrada con algoritmo AES-256 en reposo y TLS 1.3 en tránsito. Cumplimos con las regulaciones internacionales más rigurosas de privacidad estudiantil (como COPPA/GDPR) y normativas locales de resguardo de menores. ¡Jamás vendemos ni compartimos datos!";
+    } else if (textLower.includes("integr") || textLower.includes("conectar") || textLower.includes("sincro") || textLower.includes("sistema") || textLower.includes("sis") || textLower.includes("base") || textLower.includes("api") || textLower.includes("secretar") || textLower.includes("gesti")) {
+      return "🔌 **Integración Transparente**: EduPlop se acopla a tu infraestructura actual. Ofrecemos adaptadores API estándar para importar alumnos, cursos y apoderados desde tu base de datos escolar tradicional, eliminando doble entrada manual de datos de secretaría.";
+    } else if (textLower.includes("offline") || textLower.includes("internet") || textLower.includes("corte") || textLower.includes("señal") || textLower.includes("celular") || textLower.includes("red") || textLower.includes("desconec")) {
+      return "📶 **Diseño Offline-First**: No te preocupes por la conexión deficiente en el portón escolar. Nuestra tecnología habilita que los profesores firmen y confirmen la identidad del apoderado localmente mediante firmas criptográficas empotradas. Al volver el internet, la base central se sincroniza automáticamente.";
+    } else if (textLower.includes("ia") || textLower.includes("inteligencia") || textLower.includes("gemini") || textLower.includes("comunic") || textLower.includes("empat") || textLower.includes("redac") || textLower.includes("tono")) {
+      return "✨ Nuestra **IA Empática** (desarrollada con Gemini) asiste a directores y docentes en momentos críticos de estrés. Permite redactar mensajes diarios, notificaciones y comunicados con un tono optimizado, claro e institucional para que las familias sientan contención en lugar de angustia.";
+    } else if (textLower.includes("descuento") || textLower.includes("preventa") || textLower.includes("precio") || textLower.includes("comprar") || textLower.includes("contra") || textLower.includes("promo") || textLower.includes("cupon") || textLower.includes("cupón") || textLower.includes("costo") || textLower.includes("pago") || textLower.includes("comercial") || textLower.includes("vender") || textLower.includes("suscrip")) {
+      return "🚀 ¡Estamos en campaña de preventa exclusiva! Si te pre-inscribes hoy mismo utilizando el formulario de la página principal, obtendrás un **50% de descuento de por vida** aplicando el cupón **EDUPLOP50PREVENTA** para tu establecimiento.";
+    } else if (textLower.includes("mural") || textLower.includes("foro") || textLower.includes("red social") || textLower.includes("comentar") || textLower.includes("foto") || textLower.includes("imagen") || textLower.includes("familia") || textLower.includes("social")) {
+      return "📸 **Mural Familiar Protegido**: El Mural de EduPlop es una red social privada de la escuela para que los docentes compartan los progresos y trabajos de clase. Las familias reaccionan únicamente con emojis o palabras de aliento preseleccionadas en un entorno moderado y blindado.";
+    } else if (textLower.includes("repositorio") || textLower.includes("archivo") || textLower.includes("boletin") || textLower.includes("boletín") || textLower.includes("informe") || textLower.includes("documento") || textLower.includes("excur") || textLower.includes("médic") || textLower.includes("medic") || textLower.includes("circula")) {
+      return "📁 **Repositorio Digital Seguro**: EduPlop cuenta con un espacio protegido para guardar boletines oficiales, informes pedagógicos y autorizaciones médicas para excursiones, accesibles de manera 100% confidencial por las familias acreditadas.";
+    } else if (textLower.includes("quien") || textLower.includes("que es") || textLower.includes("plop") || textLower.includes("robot") || textLower.includes("plopy") || textLower.includes("hola") || textLower.includes("buen") || textLower.includes("saludo") || textLower.includes("present")) {
+      return "🤖 ¡Hola! Soy **Plopy**, tu simpático robot de servicio interactivo escolar de **EduPlop**. Estoy aquí para aclarar tus dudas técnicas y operativas sobre nuestra plataforma de retiro seguro y comunicación empática sustentados en la información de la página. ¿Qué te gustaría saber hoy?";
+    } else if (textLower.includes("gracia") || textLower.includes("adios") || textLower.includes("chau") || textLower.includes("excelente") || textLower.includes("entendido")) {
+      return "✨ ¡Es un placer enorme acompañarte! Si deseas experimentar EduPlop o congelar el 50% de descuento para tu colegio, pre-inscríbete completando el formulario. ¡Un gran saludo!";
+    } else {
+      return "🤖 Disculpa, como asistente oficial de **EduPlop** mi conocimiento está limitado estrictamente a la información institucional de producto contenida en esta página web (como el Retiro Seguro QR, la IA Empática, Privacidad de Datos, Integración SIS, Mural Familiar, Repositorio Seguro y la pre-venta del 50%). No dispongo de información específica sobre tu consulta externa.\n\n✍️ ¡Te invito cordialmente a **dejar tus datos en el formulario de pre-inscripción** al final de la página! De esta forma, un asesor comercial se comunicará contigo de inmediato para brindarte asesoría detallada y exclusiva.";
     }
-
-    return simulatedReply;
   };
 
   const handleSendMessage = async (userPrompt: string) => {
@@ -397,9 +398,9 @@ export default function SmartBot() {
 
             {/* Chatbot Active warning banner regarding legal context */}
             <div className="bg-indigo-50/80 border-b border-indigo-100/50 px-4 py-2.5 flex items-start gap-2.5">
-              <ShieldAlert className="h-4 w-4 text-indigo-505 shrink-0 mt-0.5" />
+              <ShieldAlert className="h-4 w-4 text-indigo-500 shrink-0 mt-0.5" />
               <p className="text-[10px] text-indigo-950 font-medium leading-relaxed">
-                Asesor oficial de **EduPlop**. Protegido conforme a la ley argentina de seguridad 25.326/26.529.
+                Asesor oficial de **EduPlop**. Protegido conforme a normativas de seguridad de la información escolar y privacidad de datos de menores.
               </p>
             </div>
 
