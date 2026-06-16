@@ -27,12 +27,35 @@ export default function AppScreenshots() {
   const [authorizedRetiroList, setAuthorizedRetiroList] = useState<Array<{name: string, relation: string, date: string}>>([
     { name: "Laura Fernández", relation: "Madre", date: "Hoy" }
   ]);
-  const [likesCount, setLikesCount] = useState(15);
-  const [hasLiked, setHasLiked] = useState(false);
-  const [newCommentText, setNewCommentText] = useState("");
-  const [comments, setComments] = useState<Array<{author: string, text: string}>>([
-    { author: "Carla (Mamá de Pedro)", text: "¡Qué bien la pasaron! Gracias por las fotos." }
+  // Richer interactive Mural & Document states
+  const [muralFeed, setMuralFeed] = useState([
+    {
+      id: "post-1",
+      author: "Docente Pérez",
+      role: "Sala Verde",
+      time: "Hace 2 horas",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&facepad=2&w=80&h=80&q=80",
+      caption: "¡Gran día en el jardín botánico de excursión! Descubrimos plantas aromáticas y bichitos nuevos. ¡Mía se divirtió mucho reconociendo las hojas!",
+      images: [
+        "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=200&h=280&q=80",
+        "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=120&h=80&q=80",
+        "https://images.unsplash.com/photo-1540479859555-17af45c78a90?auto=format&fit=crop&w=120&h=80&q=80"
+      ],
+      likes: 15,
+      hasLiked: false,
+      comments: [
+        { author: "Carla (Mamá de Pedro)", text: "¡Qué bien la pasaron! Gracias por las fotos." }
+      ]
+    }
   ]);
+  const [newCommentText, setNewCommentText] = useState("");
+  const [customCaptionInput, setCustomCaptionInput] = useState("");
+  const [showTeacherPanel, setShowTeacherPanel] = useState(false);
+  const [docDownloads, setDocDownloads] = useState<Record<string, "descargar" | "descargando" | "completado">>({
+    "boletin-1": "descargar",
+    "autorizapaseo-1": "descargar",
+    "fichamedica-1": "descargar"
+  });
 
   const screens: ScreenDetailSpace[] = [
     {
@@ -102,32 +125,91 @@ export default function AppScreenshots() {
       id: "mural",
       title: "Mural de Actividades 'Sala Verde'",
       badge: "Pilar 6: Comunidad Escolar",
-      shortDesc: "Un espacio interactivo diseñado exclusivamente para co-crear comunidad junto a padres y familias, en un ambiente libre de publicidad.",
+      shortDesc: "Un espacio interactivo diseñado exclusivamente para co-crear comunidad junto a padres y familias, en un ambiente libre de publicidad ni algoritmos externos. Los docentes cargan los trabajos y las familias interactúan.",
       benefitTitle: "Educación compartida y visible:",
       benefits: [
-        "La educadora comparte fotos seguras del proceso de aprendizaje de los niños.",
-        "Interacciones saludables, likes, emojis y comentarios con moderación educativa interna.",
-        "Sentido de pertenencia profundo al ver el progreso afectivo y cognitivo grupal."
+        "La educadora comparte de forma segura fotos del proceso y trabajos de los niños.",
+        "Los padres reaccionan con emojis simpáticos o palabras de aliento preseleccionadas.",
+        "Sección para simular la publicación docente directa: ¡Prueba a crear una publicación!"
       ],
-      legalHighlight: "Garantía de consentimiento de imagen, protegiendo a los menores de la indexación en buscadores públicos."
+      legalHighlight: "Garantía de consentimiento de imagen, protegiendo a los menores bajo estándares de privacidad familiar escolar."
+    },
+    {
+      id: "documents",
+      title: "Legajo Digital & Boletines",
+      badge: "Pilar 7: Gestión Documental",
+      shortDesc: "Accede de forma directa y privada a los boletines oficiales de notas de tus hijos, informes de orientación pedagógica y circulares con autorizaciones para descargar e imprimir.",
+      benefitTitle: "Tu archivo escolar libre de papeles:",
+      benefits: [
+        "Boletines académicos cifrados asignados confidencialmente para cada familia.",
+        "Descarga instantánea de autorizaciones para paseos, excursiones o fichas médicas.",
+        "Acusa recibo digital directo reduciendo llamadas telefónicas e insistencias de secretaría."
+      ],
+      legalHighlight: "Consistente con los reglamentos de resguardo escolar digital de la Ley de Educación Nacional."
     }
   ];
 
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCommentText.trim()) return;
-    setComments([...comments, { author: "Tú (Apoderado)", text: newCommentText }]);
-    setNewCommentText("");
+  const handleAddCommentToPost = (postId: string, text: string, sender = "Tú (Apoderado)") => {
+    if (!text.trim()) return;
+    setMuralFeed(prevFeed => prevFeed.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          comments: [...post.comments, { author: sender, text }]
+        };
+      }
+      return post;
+    }));
   };
 
-  const handleLike = () => {
-    if (hasLiked) {
-      setLikesCount(likesCount - 1);
-      setHasLiked(false);
-    } else {
-      setLikesCount(likesCount + 1);
-      setHasLiked(true);
-    }
+  const handleLikePost = (postId: string) => {
+    setMuralFeed(prevFeed => prevFeed.map(post => {
+      if (post.id === postId) {
+        const nextHasLiked = !post.hasLiked;
+        return {
+          ...post,
+          hasLiked: nextHasLiked,
+          likes: nextHasLiked ? post.likes + 1 : post.likes - 1
+        };
+      }
+      return post;
+    }));
+  };
+
+  const handleTeacherUpload = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customCaptionInput.trim()) return;
+    const imagesArray = [
+      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=200&h=280&q=80",
+      "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=200&h=280&q=80"
+    ];
+    // Pick image based on rotation or length
+    const randomImage = imagesArray[muralFeed.length % imagesArray.length];
+
+    const newPost = {
+      id: `post-${Date.now()}`,
+      author: "Tú (Docente)",
+      role: "Sala Verde",
+      time: "Ahora mismo",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&facepad=2&w=80&h=80&q=80",
+      caption: `🎨 Trabajo de Arte: "${customCaptionInput}"`,
+      images: [randomImage],
+      likes: 1,
+      hasLiked: true,
+      comments: [
+        { author: "Docente Pérez", text: "¡Publicado en la pizarra segura para familias!" }
+      ]
+    };
+    setMuralFeed([newPost, ...muralFeed]);
+    setCustomCaptionInput("");
+    setShowTeacherPanel(false);
+  };
+
+  const startDocDownload = (docId: string) => {
+    setDocDownloads(prev => ({ ...prev, [docId]: "descargando" }));
+    setTimeout(() => {
+      setDocDownloads(prev => ({ ...prev, [docId]: "completado" }));
+    }, 1800);
   };
 
   return (
@@ -239,7 +321,8 @@ export default function AppScreenshots() {
                   {/* Menu Tabs mimicking your layout */}
                   <div className="grid grid-cols-4 gap-1 border-b border-rose-50 pb-2">
                     <button
-                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition ${
+                      onClick={() => setActiveScreenIndex(1)}
+                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
                         activeScreenIndex === 1 ? "bg-indigo-600 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -247,7 +330,8 @@ export default function AppScreenshots() {
                       <span className="text-[8px] font-bold">Mensajes</span>
                     </button>
                     <button
-                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition ${
+                      onClick={() => setActiveScreenIndex(2)}
+                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
                         activeScreenIndex === 2 ? "bg-indigo-600 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -255,7 +339,8 @@ export default function AppScreenshots() {
                       <span className="text-[8px] font-bold">Agenda</span>
                     </button>
                     <button
-                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition ${
+                      onClick={() => setActiveScreenIndex(3)}
+                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
                         activeScreenIndex === 3 ? "bg-indigo-600 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -263,12 +348,13 @@ export default function AppScreenshots() {
                       <span className="text-[8px] font-bold">Retiro</span>
                     </button>
                     <button
-                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition ${
-                        activeScreenIndex === 4 || activeScreenIndex === 5 ? "bg-indigo-600 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
+                      onClick={() => setActiveScreenIndex(5)}
+                      className={`py-1 px-0.5 rounded-md flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                        activeScreenIndex === 4 || activeScreenIndex === 5 || activeScreenIndex === 6 ? "bg-indigo-600 text-white shadow-xs" : "bg-white text-slate-600 hover:bg-slate-100"
                       }`}
                     >
                       <span className="text-[10px]">🏫</span>
-                      <span className="text-[8px] font-bold">Puerta</span>
+                      <span className="text-[8px] font-bold">Mural/Doc</span>
                     </button>
                   </div>
                 </div>
@@ -558,186 +644,369 @@ export default function AppScreenshots() {
                           <p className="text-emerald-400 font-bold">✓ Sincronización activa</p>
                           <p>SECURE KEY: Ed25519-Sign-Verified</p>
                           <p>BLOK_NUM: #20260610</p>
-                          <p className="truncate">AUDIT_HASH: SHA-256: 7f0a9...7cb1</p>
                         </div>
                       </motion.div>
                     )}
 
                     {/* SCREEN 6: MURAL SOCIAL */}
                     {activeScreenIndex === 5 && (
-                      <motion.div
-                        key="scr-mural"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="space-y-2.5 pt-0 text-left"
-                      >
-                        <div className="space-y-0.5">
-                          <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">Feed Seguro</span>
-                          <h4 className="text-[10px] font-bold text-slate-800 flex items-center justify-between">
-                            <span>Mural de Actividades - Sala Verde</span>
-                            <span className="text-[7px] text-mint-600 bg-mint-50 px-1 py-0.2 rounded font-mono">Privado</span>
-                          </h4>
-                        </div>
+                       <motion.div
+                         key="scr-mural"
+                         initial={{ opacity: 0 }}
+                         animate={{ opacity: 1 }}
+                         exit={{ opacity: 0 }}
+                         className="space-y-2 py-0 text-left"
+                       >
+                         <div className="flex items-center justify-between">
+                           <div className="space-y-0.5">
+                             <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">Feed Seguro</span>
+                             <h4 className="text-[10px] font-bold text-slate-800">Mural de Actividades - Sala Verde</h4>
+                           </div>
+                           
+                           <button
+                             type="button"
+                             onClick={() => setShowTeacherPanel(!showTeacherPanel)}
+                             className="text-[7.5px] bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-extrabold cursor-pointer transition flex items-center gap-0.5"
+                           >
+                             <span>+</span>
+                             <span>{showTeacherPanel ? "Cerrar" : "Docente: Subir"}</span>
+                           </button>
+                         </div>
 
-                        {/* Stories/Categories list matching Screenshot 6 exactly */}
-                        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none leading-none">
-                          {/* Category 1: Featured */}
-                          <div className="flex-none w-[68px] text-center space-y-0.5">
-                            <div className="relative h-[42px] w-[68px] rounded-lg overflow-hidden border border-slate-150 shadow-3xs">
-                              <img 
-                                src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=120&h=80&q=70"
-                                alt="Featured"
-                                className="w-full h-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                            </div>
-                            <span className="text-[7px] text-slate-500 block font-semibold text-center mt-0.5">Featured</span>
-                          </div>
-                          
-                          {/* Category 2: Docentes */}
-                          <div className="flex-none w-[68px] text-center space-y-0.5">
-                            <div className="relative h-[42px] w-[68px] rounded-lg overflow-hidden border border-slate-150 shadow-3xs">
-                              <img 
-                                src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=120&h=80&q=70"
-                                alt="Docentes"
-                                className="w-full h-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                            </div>
-                            <span className="text-[7px] text-slate-500 block font-semibold text-center mt-0.5">Docentes</span>
-                          </div>
+                         {/* Teacher Panel Simulation */}
+                         {showTeacherPanel && (
+                           <motion.form
+                             initial={{ opacity: 0, y: -5 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             onSubmit={handleTeacherUpload}
+                             className="bg-indigo-50 border border-indigo-100 p-2 rounded-lg space-y-1"
+                           >
+                             <span className="text-[7.5px] text-indigo-700 font-extrabold uppercase block">Pizarra del Docente</span>
+                             <input
+                               type="text"
+                               required
+                               value={customCaptionInput}
+                               onChange={(e) => setCustomCaptionInput(e.target.value)}
+                               placeholder="Ej: Pintura de manos, Modelado de arcilla..."
+                               className="w-full bg-white border border-slate-200 text-[8px] rounded px-1.5 py-1 text-slate-800 focus:outline-hidden"
+                             />
+                             <div className="flex justify-between items-center">
+                               <span className="text-[7px] text-slate-400 italic">Simulará fotos reales de clase...</span>
+                               <button
+                                 type="submit"
+                                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[7.5px] px-2 py-0.5 rounded cursor-pointer animate-pulse"
+                               >
+                                 Publicar en Mural
+                               </button>
+                             </div>
+                           </motion.form>
+                         )}
 
-                          {/* Category 3: Mía Fernández */}
-                          <div className="flex-none w-[68px] text-center space-y-0.5">
-                            <div className="relative h-[42px] w-[68px] rounded-lg overflow-hidden border border-slate-150 shadow-3xs">
-                              <img 
-                                src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=120&h=80&q=70"
-                                alt="Mía Fernández"
-                                className="w-full h-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                              <div className="absolute bottom-0.5 right-0.5 bg-red-500 text-white text-[5px] h-2.5 w-2.5 rounded-full flex items-center justify-center shadow-3xs">
-                                ❤️
-                              </div>
-                            </div>
-                            <span className="text-[7px] text-slate-500 block font-semibold text-center mt-0.5 truncate">Mía Fernández</span>
-                          </div>
-                        </div>
+                         {/* Stories/Categories list matching Screenshot 6 exactly */}
+                         <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-none leading-none">
+                           <div className="flex-none w-[52px] text-center space-y-0.5">
+                             <div className="relative h-[32px] w-[52px] rounded-md overflow-hidden border border-slate-150 shadow-3xs">
+                               <img 
+                                 src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=120&h=80&q=70"
+                                 alt="Featured"
+                                 className="w-full h-full object-cover"
+                                 referrerPolicy="no-referrer"
+                               />
+                             </div>
+                             <span className="text-[6.5px] text-slate-500 block font-semibold truncate">Juegos</span>
+                           </div>
+                           
+                           <div className="flex-none w-[52px] text-center space-y-0.5">
+                             <div className="relative h-[32px] w-[52px] rounded-md overflow-hidden border border-slate-150 shadow-3xs">
+                               <img 
+                                 src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=120&h=80&q=70"
+                                 alt="Docentes"
+                                 className="w-full h-full object-cover"
+                                 referrerPolicy="no-referrer"
+                               />
+                             </div>
+                             <span className="text-[6.5px] text-slate-500 block font-semibold truncate font-mono">Aula Abierta</span>
+                           </div>
 
-                        {/* Interactive Social Card replicating Screenshot 6's layout */}
-                        <div className="bg-white rounded-xl border border-slate-150 shadow-3xs overflow-hidden">
-                          
-                          {/* Inner Header with Teacher avatar and name */}
-                          <div className="p-2 pb-1 flex items-center gap-1.5">
-                            <img 
-                              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&facepad=2&w=80&h=80&q=80"
-                              alt="Docente Pérez"
-                              className="h-6.5 w-6.5 rounded-full border border-slate-150 object-cover"
-                              referrerPolicy="no-referrer"
-                            />
-                            <div className="leading-tight shrink-0">
-                              <p className="text-[8.5px] font-extrabold text-slate-900">Docente Pérez</p>
-                              <span className="text-[6.5px] text-slate-400 block font-medium">Hace 2 horas • Sala Verde</span>
-                            </div>
-                            <div className="ml-auto text-slate-350 text-[10px] cursor-pointer">•••</div>
-                          </div>
+                           <div className="flex-none w-[52px] text-center space-y-0.5">
+                             <div className="relative h-[32px] w-[52px] rounded-md overflow-hidden border border-slate-150 shadow-3xs">
+                               <img 
+                                 src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=120&h=80&q=70"
+                                 alt="Mía"
+                                 className="w-full h-full object-cover"
+                                 referrerPolicy="no-referrer"
+                               />
+                               <div className="absolute bottom-0.5 right-0.5 bg-red-500 text-white text-[4px] h-2 w-2 rounded-full flex items-center justify-center">
+                                 ❤️
+                               </div>
+                             </div>
+                             <span className="text-[6.5px] text-slate-500 block font-semibold truncate">Mía F.</span>
+                           </div>
+                         </div>
 
-                          {/* Post Text caption */}
-                          <p className="px-2 text-[7.5px] text-slate-700 leading-normal font-sans italic pb-1">
-                            "¡Gran día en el jardín botánico! Descubrimos plantas aromáticas y bichitos nuevos. ¡Mía se divirtió mucho reconociendo las hojas!"
-                          </p>
+                         {/* Mapped posts list */}
+                         <div className="space-y-2 overflow-y-auto max-h-[195px] pr-0.5 scrollbar-thin">
+                           {muralFeed.map(post => (
+                             <div key={post.id} className="bg-white rounded-xl border border-slate-150 shadow-3xs overflow-hidden">
+                               
+                               {/* Post Header */}
+                               <div className="p-1.5 pb-0.5 flex items-center gap-1.5">
+                                 <img 
+                                   src={post.avatar}
+                                   alt={post.author}
+                                   className="h-5.5 w-5.5 rounded-full border border-slate-150 object-cover"
+                                   referrerPolicy="no-referrer"
+                                 />
+                                 <div className="leading-tight shrink-0">
+                                   <p className="text-[7.5px] font-extrabold text-slate-900">{post.author}</p>
+                                   <span className="text-[5.5px] text-slate-400 block font-medium">{post.time} • {post.role}</span>
+                                 </div>
+                                 <span className="ml-auto text-[6px] text-indigo-600 bg-indigo-50 px-1 rounded-sm font-mono uppercase font-bold">Seguro</span>
+                               </div>
 
-                          {/* GRID OF IMAGES mimicking Screenshot 6 layout */}
-                          <div className="grid grid-cols-12 gap-1 px-2 pb-2">
-                            {/* Tall Left Image: child looking at orange/yellow flowers */}
-                            <div className="col-span-7 h-[100px] rounded-lg overflow-hidden border border-slate-150 relative">
-                              <img 
-                                src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=200&h=280&q=80"
-                                alt="Niño jardín botánico"
-                                className="w-full h-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                            </div>
+                               {/* Post text caption */}
+                               <p className="px-1.5 text-[7px] text-slate-700 leading-tight font-sans pb-1 shrink-0">
+                                 {post.caption}
+                               </p>
 
-                            {/* Right column containing 2 stacked cells */}
-                            <div className="col-span-5 h-[100px] flex flex-col gap-1">
-                              {/* Top right: children under tree explorer */}
-                              <div className="h-[48px] rounded-lg overflow-hidden border border-slate-150 relative animate-pulse/20">
-                                <img 
-                                  src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=120&h=80&q=80"
-                                  alt="Bichitos nuevos"
-                                  className="w-full h-full object-cover"
-                                  referrerPolicy="no-referrer"
-                                />
-                              </div>
+                               {/* Grid images layout */}
+                               <div className="grid grid-cols-12 gap-0.5 px-1.5 pb-1">
+                                 {post.images.length === 1 && (
+                                   <div className="col-span-12 h-[80px] rounded-md overflow-hidden border border-slate-150">
+                                     <img 
+                                       src={post.images[0]}
+                                       alt="Excursión"
+                                       className="w-full h-full object-cover"
+                                       referrerPolicy="no-referrer"
+                                     />
+                                   </div>
+                                 )}
+                                 {post.images.length > 1 && (
+                                   <>
+                                     <div className="col-span-7 h-[85px] rounded-md overflow-hidden border border-slate-150">
+                                       <img 
+                                         src={post.images[0]}
+                                         alt="Imagen primaria"
+                                         className="w-full h-full object-cover"
+                                         referrerPolicy="no-referrer"
+                                       />
+                                     </div>
+                                     <div className="col-span-5 h-[85px] flex flex-col gap-0.5">
+                                       <div className="h-[41px] rounded-md overflow-hidden border border-slate-150">
+                                         <img 
+                                           src={post.images[1]}
+                                           alt="Imagen secundaria"
+                                           className="w-full h-full object-cover"
+                                           referrerPolicy="no-referrer"
+                                         />
+                                       </div>
+                                       <div className="h-[41px] rounded-md overflow-hidden border border-slate-150 relative">
+                                         <img 
+                                           src={post.images[2] || post.images[0]}
+                                           alt="Imagen terciaria"
+                                           className="w-full h-full object-cover"
+                                           referrerPolicy="no-referrer"
+                                         />
+                                         <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center text-white text-[7px] font-bold">
+                                           +4
+                                         </div>
+                                       </div>
+                                     </div>
+                                   </>
+                                 )}
+                               </div>
 
-                              {/* Bottom right: magnifying glass / colorful plants explorer, with +4 override */}
-                              <div className="h-[48px] rounded-lg overflow-hidden border border-slate-150 relative cursor-pointer">
-                                <img 
-                                  src="https://images.unsplash.com/photo-1540479859555-17af45c78a90?auto=format&fit=crop&w=120&h=80&q=80"
-                                  alt="Plantas"
-                                  className="w-full h-full object-cover"
-                                  referrerPolicy="no-referrer"
-                                />
-                                <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center text-white text-[8px] font-bold">
-                                  +4
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Action Bar (Like and Comment metrics) */}
-                          <div className="px-2 py-1 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[7px] text-slate-400 font-sans">
-                            <button 
-                              onClick={handleLike} 
-                              className="font-bold text-slate-600 flex items-center gap-1 hover:text-red-500 transition cursor-pointer text-[7.5px]"
-                            >
-                              <motion.span
-                                animate={{
-                                  scale: hasLiked ? [1, 1.35, 1] : [1, 1.1, 1]
-                                }}
-                                transition={{
-                                  duration: hasLiked ? 0.4 : 2,
-                                  repeat: hasLiked ? 0 : Infinity,
-                                  ease: "easeInOut"
-                                }}
-                                className="inline-block"
-                              >
-                                {hasLiked ? "❤️" : "🤍"}
-                              </motion.span>
-                              <span className="font-extrabold text-[7px]">{likesCount}</span>
+                               {/* Family Quick Reactions Row */}
+                               <div className="px-1.5 py-1 bg-slate-50 border-t border-b border-slate-100 flex items-center gap-1 overflow-x-auto scrollbar-none">
+                                 <span className="text-[5.5px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">Reacción rápida:</span>
+                                 <button
+                                   type="button"
+                                   onClick={() => handleAddCommentToPost(post.id, "❤️ ¡Bello!", "Tú (Apoderado)")}
+                                   className="text-[6.5px] whitespace-nowrap bg-white hover:bg-rose-50 border border-slate-150 rounded px-1 py-0.2 font-sans font-medium transition cursor-pointer"
+                                 >
+                                   ❤️ ¡Bello!
+                                 </button>
+                                 <button
+                                   type="button"
+                                   onClick={() => handleAddCommentToPost(post.id, "👏 ¡Maravilloso!", "Tú (Apoderado)")}
+                                   className="text-[6.5px] whitespace-nowrap bg-white hover:bg-amber-50 border border-slate-150 rounded px-1 py-0.2 font-sans font-medium transition cursor-pointer"
+                                 >
+                                   👏 ¡Felicitar!
+                                 </button>
+                                 <button
+                                   type="button"
+                                   onClick={() => handleAddCommentToPost(post.id, "🥰 ¡Qué amor!", "Tú (Apoderado)")}
+                                   className="text-[6.5px] whitespace-nowrap bg-white hover:bg-indigo-50 border border-slate-150 rounded px-1 py-0.2 font-sans font-medium transition cursor-pointer"
+                                 >
+                                   🥰 ¡Lindo!
+                                 </button>
+                               </div>
+
+                               {/* Metrics */}
+                               <div className="px-1.5 py-0.5 flex items-center justify-between text-[6.5px] text-slate-400">
+                                 <button
+                                   type="button"
+                                   onClick={() => handleLikePost(post.id)}
+                                   className="font-bold text-slate-600 flex items-center gap-0.5 hover:text-red-500 transition cursor-pointer"
+                                 >
+                                   <span>{post.hasLiked ? "❤️" : "🤍"}</span>
+                                   <span>{post.likes}</span>
+                                 </button>
+                                 <span>{post.comments.length} comentarios</span>
+                               </div>
+
+                               {/* Comments loop */}
+                               {post.comments.length > 0 && (
+                                 <div className="p-1 px-1.5 bg-slate-50/50 border-t border-slate-100 space-y-0.5 max-h-[50px] overflow-y-auto scrollbar-none text-[6.5px]">
+                                   {post.comments.map((comment, commentIdx) => (
+                                     <div key={commentIdx} className="text-slate-605 leading-tight">
+                                       <strong className="text-slate-800">{comment.author}:</strong> "{comment.text}"
+                                      </div>
+                                   ))}
+                                 </div>
+                               )}
+
+                             </div>
+                           ))}
+                         </div>
+
+                         {/* Main feed individual submit form */}
+                         <form
+                           onSubmit={(e) => {
+                             e.preventDefault();
+                             const form = e.currentTarget;
+                             const input = form.elements.namedItem("mainComment") as HTMLInputElement;
+                             if (input && input.value.trim()) {
+                               handleAddCommentToPost("post-1", input.value);
+                               input.value = "";
+                             }
+                           }}
+                           className="flex gap-1 pt-1 border-t border-slate-100"
+                         >
+                           <input
+                             name="mainComment"
+                             type="text"
+                             required
+                             placeholder="Añade un comentario al mural..."
+                             className="bg-white border border-slate-150 text-[7.5px] rounded-md px-2 py-0.5 flex-grow focus:outline-hidden"
+                           />
+                           <button
+                             type="submit"
+                             className="bg-indigo-600 text-white rounded px-2 py-0.5 text-[7px] font-bold hover:bg-indigo-700 transition cursor-pointer">
+                              Enviar
                             </button>
-                            <span>{comments.length} comentarios</span>
-                          </div>
+                         </form>
 
-                        </div>
+                       </motion.div>
+                     )}
 
-                        {/* Comments Block with nice scrolling representation */}
-                        <div className="space-y-1 bg-white p-2 rounded-xl border border-slate-150 max-h-[72px] overflow-y-auto">
-                          {comments.map((c, cIdx) => (
-                            <div key={cIdx} className="text-[7px] text-slate-600 border-b border-slate-100/40 pb-0.5 mb-0.5 last:border-0 last:mb-0 leading-tight border-slate-100">
-                              <strong>{c.author}:</strong> "{c.text}"
-                            </div>
-                          ))}
-                        </div>
+                     {/* SCREEN 7: LEGAGO DOCUMENTAL / BOLETINES */}
+                     {activeScreenIndex === 6 && (
+                       <motion.div
+                         key="scr-docs"
+                         initial={{ opacity: 0 }}
+                         animate={{ opacity: 1 }}
+                         exit={{ opacity: 0 }}
+                         className="space-y-3 pt-0 text-left"
+                       >
+                         <div className="space-y-0.5">
+                           <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">Legajo Familiar Confidencial</span>
+                           <h4 className="text-[10px] font-bold text-slate-800 flex items-center justify-between">
+                             <span>Carpeta de Documentos Seguros</span>
+                             <span className="text-[6.5px] text-teal-600 bg-teal-50 px-1 py-0.2 rounded font-semibold tracking-wider font-mono">🔒 Encriptado</span>
+                           </h4>
+                         </div>
 
-                        {/* Commentary Form box */}
-                        <form onSubmit={handleAddComment} className="flex gap-1">
-                          <input
-                            type="text"
-                            required
-                            value={newCommentText}
-                            onChange={(e) => setNewCommentText(e.target.value)}
-                            placeholder="Escribí un comentario..."
-                            className="bg-white border text-[7.5px] rounded-md px-2 py-0.5 flex-grow focus:outline-hidden"
-                          />
-                          <button type="submit" className="bg-indigo-600 text-white rounded px-2 py-1 text-[7px] font-bold hover:bg-indigo-700 transition cursor-pointer">
-                            Enviar
-                          </button>
-                        </form>
-                      </motion.div>
-                    )}
+                         {/* Repository of documents */}
+                         <div className="space-y-1.5">
+                           
+                           {/* Item 1: boletin */}
+                           <div className="bg-white border border-slate-150 rounded-xl p-2 flex flex-col gap-1 shadow-3xs hover:border-slate-300 transition">
+                             <div className="flex items-start justify-between gap-1">
+                               <div className="space-y-0.5 min-w-0">
+                                 <span className="text-[6px] uppercase font-bold text-coral-500 bg-coral-50 px-1 rounded-sm">Oficial</span>
+                                 <p className="text-[8px] font-extrabold text-slate-800 leading-tight truncate">Boletín de Notas - 1º Bimestre.pdf</p>
+                                 <p className="text-[6.5px] text-slate-400 font-mono">Tamaño: 1.4 MB • Emitido por Secretaría</p>
+                               </div>
+                               <span className="text-[8px] shrink-0">📄</span>
+                             </div>
+                             
+                             <button
+                               type="button"
+                               onClick={() => startDocDownload("boletin-1")}
+                               className={`w-full py-1 rounded text-[7px] font-bold transition text-center cursor-pointer ${
+                                 docDownloads["boletin-1"] === "descargar"
+                                   ? "bg-slate-900 text-white hover:bg-slate-800"
+                                   : docDownloads["boletin-1"] === "descargando"
+                                   ? "bg-indigo-600 text-white cursor-wait animate-pulse"
+                                   : "bg-emerald-100 text-emerald-800 border border-emerald-200 cursor-default"
+                               }`}
+                             >
+                               {docDownloads["boletin-1"] === "descargar" && "Descargar Boletín Académico (PDF)"}
+                               {docDownloads["boletin-1"] === "descargando" && "Descargando... ⏳"}
+                               {docDownloads["boletin-1"] === "completado" && "✓ Descargado / Imprimir Notas"}
+                             </button>
+                           </div>
+
+                           {/* Item 2: autorization */}
+                           <div className="bg-white border border-slate-150 rounded-xl p-2 flex flex-col gap-1 shadow-3xs hover:border-slate-300 transition">
+                             <div className="flex items-start justify-between gap-1">
+                               <div className="space-y-0.5 min-w-0">
+                                 <span className="text-[6px] uppercase font-bold text-indigo-505 text-indigo-600 bg-indigo-50 px-1 rounded-sm">Imprimible</span>
+                                 <p className="text-[8px] font-extrabold text-slate-800 leading-tight truncate">Autorización Excursión de Ciencia.pdf</p>
+                                 <p className="text-[6.5px] text-slate-400 font-mono">Tamaño: 410 KB • Requiere Firma Física y Retorno</p>
+                               </div>
+                               <span className="text-[8px] shrink-0">📝</span>
+                             </div>
+                             
+                             <button
+                               type="button"
+                               onClick={() => startDocDownload("autorizapaseo-1")}
+                               className={`w-full py-1 rounded text-[7px] font-bold transition text-center cursor-pointer ${
+                                 docDownloads["autorizapaseo-1"] === "descargar"
+                                   ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                                   : docDownloads["autorizapaseo-1"] === "descargando"
+                                   ? "bg-indigo-400 text-white cursor-wait animate-pulse"
+                                   : "bg-teal-50 text-teal-850 border border-teal-200 cursor-default"
+                               }`}
+                             >
+                               {docDownloads["autorizapaseo-1"] === "descargar" && "Descargar y Generar para Imprimir"}
+                               {docDownloads["autorizapaseo-1"] === "descargando" && "Guardando en dispositivo..."}
+                               {docDownloads["autorizapaseo-1"] === "completado" && "✓ Generado para Imprimir (Impreso)"}
+                             </button>
+                           </div>
+
+                           {/* Item 3: medical file */}
+                           <div className="bg-white border border-slate-150 rounded-xl p-2 shadow-3xs">
+                             <div className="flex items-center justify-between">
+                               <div className="space-y-0.5">
+                                 <p className="text-[8px] font-extrabold text-slate-800 leading-none">Ficha Médica Anual Obligatoria 2026.pdf</p>
+                                 <p className="text-[6.5px] text-slate-400 font-mono">Tamaño: 820 KB • Legajo de Alumno Completo</p>
+                               </div>
+                               <span className="text-[7.5px] font-bold text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded font-mono">✓ Validado</span>
+                             </div>
+                           </div>
+
+                         </div>
+
+                         {/* Simulation upload form for parent signature */}
+                         <div className="bg-slate-100 border border-slate-200 p-2 rounded-xl text-[7px] space-y-1">
+                           <span className="font-extrabold text-slate-800 block uppercase">Subir Documento Firmado</span>
+                           <p className="text-slate-505 text-slate-500 leading-normal">¿Ya imprimiste y firmaste tu autorización? Súbela aquí para enviarla al colegio de inmediato.</p>
+                           
+                           <button
+                             type="button"
+                             onClick={() => {
+                               alert("Simulación: Seleccionando documento firmado desde la galería o archivos. El archivo es encriptado con clave local y transmitido con seguridad SSL.");
+                             }}
+                             className="w-full bg-white border border-dashed border-slate-350 hover:border-indigo-500 text-slate-650 hover:text-indigo-600 py-1.5 rounded font-bold text-center cursor-pointer transition"
+                           >
+                             📷 Escanear con Cámara o Subir PDF
+                           </button>
+                         </div>
+
+                       </motion.div>
+                     )}
 
                   </AnimatePresence>
                 </div>

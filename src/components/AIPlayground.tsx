@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Send, Copy, Check, RotateCcw, AlertCircle, RefreshCw } from "lucide-react";
 import { ToneType } from "../types";
+import { getApiUrl } from "../apiConfig";
 
 export default function AIPlayground() {
   const [rawMessage, setRawMessage] = useState("");
@@ -45,7 +46,7 @@ export default function AIPlayground() {
     setIsSimulation(false);
 
     try {
-      const response = await fetch("/api/ai-assisted-communication", {
+      const response = await fetch(getApiUrl("/api/ai-assisted-communication"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawMessage, tone }),

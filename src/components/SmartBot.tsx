@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Send, MessageSquare, X, ShieldAlert, Sparkles, SendHorizontal } from "lucide-react";
+import { getApiUrl } from "../apiConfig";
 
 interface Message {
   id: string;
@@ -212,7 +213,7 @@ export default function SmartBot() {
         content: m.content
       }));
 
-      const res = await fetch("/api/chat", {
+      const res = await fetch(getApiUrl("/api/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: chatHistory })

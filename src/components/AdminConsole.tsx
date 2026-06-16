@@ -17,6 +17,7 @@ import {
   FileSpreadsheet
 } from "lucide-react";
 import { Lead } from "../types";
+import { getApiUrl } from "../apiConfig";
 
 interface AdminConsoleProps {
   refreshTrigger: number;
@@ -59,7 +60,7 @@ export default function AdminConsole({ refreshTrigger, onLock }: AdminConsolePro
 
   const fetchGfConfig = async () => {
     try {
-      const res = await fetch("/api/admin/google-form-config");
+      const res = await fetch(getApiUrl("/api/admin/google-form-config"));
       if (res.ok) {
         const config = await res.json();
         setGfEnabled(config.enabled);
@@ -86,8 +87,8 @@ export default function AdminConsole({ refreshTrigger, onLock }: AdminConsolePro
     try {
       // Parallel fetches for raw leads, analytical report, and Google Form configurations
       const [leadsRes, reportRes] = await Promise.all([
-        fetch("/api/leads"),
-        fetch("/api/admin/report")
+        fetch(getApiUrl("/api/leads")),
+        fetch(getApiUrl("/api/admin/report"))
       ]);
 
       if (!leadsRes.ok || !reportRes.ok) {
@@ -115,7 +116,7 @@ export default function AdminConsole({ refreshTrigger, onLock }: AdminConsolePro
     setIsSavingGf(true);
     setGfStatusMsg("");
     try {
-      const res = await fetch("/api/admin/google-form-config", {
+      const res = await fetch(getApiUrl("/api/admin/google-form-config"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -144,7 +145,7 @@ export default function AdminConsole({ refreshTrigger, onLock }: AdminConsolePro
     setIsTestingGf(true);
     setGfStatusMsg("");
     try {
-      const res = await fetch("/api/admin/google-form-test", {
+      const res = await fetch(getApiUrl("/api/admin/google-form-test"), {
         method: "POST"
       });
 

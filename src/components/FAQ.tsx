@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, ShieldCheck, Key, RefreshCw, HelpCircle, EyeOff } from "lucide-react";
+import { ChevronDown, ShieldCheck, Key, RefreshCw, HelpCircle, EyeOff, Smile, FileText } from "lucide-react";
 
 interface FAQItem {
   question: string;
@@ -42,6 +42,18 @@ export default function FAQ() {
       question: "¿Cómo funciona el asistente de IA para redactar comunicados con empatía?",
       answer: "EduPlop integra de manera nativa modelos avanzados de IA (Gemini). Cuando redactas un comunicado directivo urgente (por ejemplo, suspensión de clases o aviso meteorológico), la IA puede analizar y sugerir correcciones de tono en tiempo real para mantenerlo empático, claro, libre de ambigüedades y tranquilizador para las familias.",
       icon: <HelpCircle className="h-4 w-4 text-indigo-500" />,
+    },
+    {
+      category: "Mural Familiar",
+      question: "¿Qué es el Mural Interactivo y cómo promueve una red social escolar segura?",
+      answer: "El Mural de EduPlop es un espacio completamente protegido para compartir los progresos y trabajos de los alumnos realizados en clase por los docentes. Las familias pueden ver imágenes reales de las actividades, reaccionar con emojis o palabras de aliento preestablecidas y comentar en un entorno cerrado y moderado. Esto crea un sentido profundo de comunidad y pertenencia familiar similar a una red social, pero blindada de publicidad, algoritmos externos y con estricto consentimiento de imagen de menores.",
+      icon: <Smile className="h-4 w-4 text-amber-500" />,
+    },
+    {
+      category: "Documentos",
+      question: "¿Es posible gestionar boletines de calificaciones y autorizaciones imprimibles?",
+      answer: "Sí, absolutamente. EduPlop cuenta con un repositorio digital seguro para cada familia. La administración académica o los docentes pueden cargar boletines oficiales, informes pedagógicos específicos y documentos imprimibles (como la autorización médica para excursiones o salidas didácticas). Los padres se notifican, acceden y descargan estos archivos de manera 100% personalizada y confidencial, eliminando la pérdida de circulares físicas.",
+      icon: <FileText className="h-4 w-4 text-coral-500" />,
     }
   ];
 

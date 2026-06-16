@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Clipboard, Check, Phone, Mail, School, User, ArrowRight, ExternalLink, Shield } from "lucide-react";
 import { Lead } from "../types";
+import { getApiUrl } from "../apiConfig";
 
 interface RegistrationFormProps {
   onLeadAdded?: () => void;
@@ -9,7 +10,7 @@ interface RegistrationFormProps {
 
 export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps) {
   const [name, setName] = useState("");
-  const [role, setRole] = useState("Familiar / Apoderado");
+  const [role, setRole] = useState("Docente / Educador");
   const [email, setEmail] = useState("");
   const [school, setSchool] = useState("");
   const [phone, setPhone] = useState("");
@@ -21,7 +22,6 @@ export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps)
   const [copiedCoupon, setCopiedCoupon] = useState(false);
 
   const roles = [
-    "Familiar / Apoderado",
     "Docente / Educador",
     "Director / Sostenedor / Admin",
   ];
@@ -38,7 +38,7 @@ export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps)
     setError("");
 
     try {
-      const response = await fetch("/api/leads", {
+      const response = await fetch(getApiUrl("/api/leads"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, role, email, school, phone, message }),
@@ -270,7 +270,7 @@ export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps)
                     </button>
                   </div>
                   <p className="text-[10px] text-slate-400 leading-normal text-left">
-                    *Te hemos enviado un correo de bienvenida. Guarda este cupón bien; se aplicará al momento de dar de alta la licencia anual de tu colegio o contratar tu plan familiar.
+                    *Te hemos enviado un correo de bienvenida. Guarda este cupón bien; se aplicará al momento de dar de alta la licencia de tu colegio o establecimiento.
                   </p>
                 </div>
 
