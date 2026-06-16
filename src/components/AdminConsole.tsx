@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Lead } from "../types";
 import { getApiUrl } from "../apiConfig";
+import googleFormConfig from "../../google-form-config.json";
 
 interface AdminConsoleProps {
   refreshTrigger: number;
@@ -75,9 +76,37 @@ export default function AdminConsole({ refreshTrigger, onLock }: AdminConsolePro
             message: config.entryMap.message || ""
           });
         }
+      } else {
+        // Fallback directly to static json config at build-time
+        const config = googleFormConfig;
+        setGfEnabled(config.enabled);
+        setGfFormUrl(config.formUrl || "");
+        if (config.entryMap) {
+          setGfEntryMap({
+            name: config.entryMap.name || "",
+            role: config.entryMap.role || "",
+            email: config.entryMap.email || "",
+            school: config.entryMap.school || "",
+            phone: config.entryMap.phone || "",
+            message: config.entryMap.message || ""
+          });
+        }
       }
     } catch (err) {
-      console.error("Error reading Google Form config:", err);
+      console.warn("Error reading Google Form config, falling back to static config:", err);
+      const config = googleFormConfig;
+      setGfEnabled(config.enabled);
+      setGfFormUrl(config.formUrl || "");
+      if (config.entryMap) {
+        setGfEntryMap({
+          name: config.entryMap.name || "",
+          role: config.entryMap.role || "",
+          email: config.entryMap.email || "",
+          school: config.entryMap.school || "",
+          phone: config.entryMap.phone || "",
+          message: config.entryMap.message || ""
+        });
+      }
     }
   };
 
@@ -85,23 +114,123 @@ export default function AdminConsole({ refreshTrigger, onLock }: AdminConsolePro
     setIsLoading(true);
     setError("");
     try {
-      // Parallel fetches for raw leads, analytical report, and Google Form configurations
+      // Parallel fetches for raw leads and analytical report with catch so they do not crash
       const [leadsRes, reportRes] = await Promise.all([
-        fetch(getApiUrl("/api/leads")),
-        fetch(getApiUrl("/api/admin/report"))
+        fetch(getApiUrl("/api/leads")).catch(err => {
+          console.warn("Backend leads service offline:", err);
+          return null;
+        }),
+        fetch(getApiUrl("/api/admin/report")).catch(err => {
+          console.warn("Backend report service offline:", err);
+          return null;
+        })
       ]);
 
-      if (!leadsRes.ok || !reportRes.ok) {
-        throw new Error("Sincronización fallida con servidores.");
+      let backendLeads: Lead[] = [];
+      let backendReport: ReportData | null = null;
+
+      if (leadsRes && leadsRes.ok) {
+        const leadsData = await leadsRes.json();
+        backendLeads = leadsData.leads || [];
       }
 
-      const leadsData = await leadsRes.json();
-      const reportData = await reportRes.json();
+      if (reportRes && reportRes.ok) {
+        backendReport = await reportRes.json();
+      }
 
-      setLeads(leadsData.leads || []);
-      setReport(reportData || null);
+      // Read local storage offline leads for client-side persistence representation
+      let offlineLeads: Lead[] = [];
+      try {
+        offlineLeads = JSON.parse(localStorage.getItem("eduplop_offline_leads") || "[]");
+      } catch (e) {
+        console.error("Error reading offline leads:", e);
+      }
+
+      // Merge backend and local offline backup leads
+      const allLeads = [...backendLeads];
+      const existingEmails = new Set(allLeads.map(l => l.email.toLowerCase().trim()));
+      for (const offLead of offlineLeads) {
+        const cleanEmail = offLead.email.toLowerCase().trim();
+        if (!existingEmails.has(cleanEmail)) {
+          allLeads.push(offLead);
+          existingEmails.add(cleanEmail);
+        }
+      }
+
+      setLeads(allLeads);
+
+      if (backendReport) {
+        setReport(backendReport);
+      } else {
+        // Calculate mock local report dynamically based on merged leads
+        const totalLeads = allLeads.length;
+        const schoolsSet = new Set(allLeads.map(l => l.school.toLowerCase().trim()));
+        const distinctSchools = schoolsSet.size;
+
+        const roleStats = { parents: 0, teachers: 0, admins: 0 };
+        allLeads.forEach(l => {
+          const roleLower = l.role.toLowerCase();
+          if (roleLower.includes("docente") || roleLower.includes("educador")) {
+            roleStats.teachers++;
+          } else if (roleLower.includes("director") || roleLower.includes("admin") || roleLower.includes("sostenedor")) {
+            roleStats.admins++;
+          } else {
+            roleStats.parents++;
+          }
+        });
+
+        // Simple Markdown text fallback representation
+        const markdown = `### Resumen de Leads (Local / Fallback)
+Total de leads registrados: **${totalLeads}**
+Establecimientos educacionales únicos: **${distinctSchools}**
+
+#### Distribución por rol:
+- **Docente / Educador**: ${roleStats.teachers}
+- **Directivo / Sostenedor / Admin**: ${roleStats.admins}
+- **Otros**: ${roleStats.parents}`;
+
+        setReport({
+          timestamp: new Date().toISOString(),
+          summary: { 
+            totalLeads, 
+            distinctSchools, 
+            roleStats 
+          },
+          markdown
+        });
+      }
     } catch (err: any) {
-      setError(err.message || "Error al recuperar datos de la consola privada.");
+      console.warn("Using pure local fallback for admin console state.", err);
+      // Standalone client offline view
+      let offlineLeads: Lead[] = [];
+      try {
+        offlineLeads = JSON.parse(localStorage.getItem("eduplop_offline_leads") || "[]");
+      } catch (e) {
+        console.error(e);
+      }
+      setLeads(offlineLeads);
+
+      const totalLeads = offlineLeads.length;
+      const schoolsSet = new Set(offlineLeads.map(l => l.school.toLowerCase().trim()));
+      const distinctSchools = schoolsSet.size;
+      const roleStats = { parents: 0, teachers: 0, admins: 0 };
+      offlineLeads.forEach(l => {
+        const roleLower = l.role.toLowerCase();
+        if (roleLower.includes("docente") || roleLower.includes("educador")) {
+          roleStats.teachers++;
+        } else if (roleLower.includes("director") || roleLower.includes("admin") || roleLower.includes("sostenedor")) {
+          roleStats.admins++;
+        } else {
+          roleStats.parents++;
+        }
+      });
+
+      setReport({
+        timestamp: new Date().toISOString(),
+        summary: { totalLeads, distinctSchools, roleStats },
+        markdown: `### Resumen de Leads (Modo Sin Conexión)
+Total de leads registrados: **${totalLeads}**`
+      });
     } finally {
       setIsLoading(false);
     }
