@@ -45,18 +45,22 @@ export default function Hero({ onScrollTo }: HeroProps) {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
             >
-              Conectando con <span className="bg-gradient-to-r from-coral-500 to-amber-500 bg-clip-text text-transparent">inteligencia</span> la esencia de tu colegio con el corazón de las familias.
+              Conectando con <span className="bg-gradient-to-r from-[#8A3CF2] to-[#3B26F2] bg-clip-text text-transparent">inteligencia</span> la esencia de tu colegio con el corazón de las familias.
             </motion.h1>
 
             {/* Subtext */}
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+              className="max-w-2xl mx-auto lg:mx-0"
             >
-              Co-creamos comunidad en un entorno seguro que reduce el estrés diario de familias y docentes. Potenciamos la experiencia comunicacional con Inteligencia Artificial para lograr mensajes asertivos, fluidos y empáticos, asegurando retiros de alumnos ágiles y sin preocupaciones.
-            </motion.p>
+              <div className="relative p-6 sm:p-7 rounded-2xl bg-white/95 border-2 border-indigo-100/70 shadow-xl shadow-indigo-150/10 text-left transition hover:shadow-2xl hover:border-indigo-200/80 duration-300">
+                <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-medium">
+                  Co-creamos comunidad en un entorno seguro que reduce el estrés diario de familias y docentes. Potenciamos la experiencia comunicacional con Inteligencia Artificial para lograr mensajes asertivos, fluidos y empáticos, asegurando retiros de alumnos ágiles y sin preocupaciones.
+                </p>
+              </div>
+            </motion.div>
 
             {/* Quick feature tags */}
             <motion.div 

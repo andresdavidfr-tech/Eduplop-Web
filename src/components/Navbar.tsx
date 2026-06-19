@@ -23,15 +23,13 @@ export default function Navbar({ onScrollTo }: NavbarProps) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo and Name */}
         <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <div className="relative">
-            <EduplopLogo size={38} />
-            <div className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+          <EduplopLogo size={38} />
+          <span className="relative text-xl font-extrabold tracking-tight text-slate-800 font-display flex items-center pr-3.5">
+            Edu<span className="text-indigo-650 text-indigo-600">Plop</span>
+            <span className="absolute right-0 top-[6px] flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-            </div>
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-slate-800 font-display">
-            Edu<span className="text-indigo-650 text-indigo-600">Plop</span>
+            </span>
           </span>
         </div>
 
