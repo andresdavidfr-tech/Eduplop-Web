@@ -11,7 +11,7 @@ interface RegistrationFormProps {
 
 export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps) {
   const [name, setName] = useState("");
-  const [role, setRole] = useState("Docente / Educador");
+  const [role, setRole] = useState("Director");
   const [email, setEmail] = useState("");
   const [school, setSchool] = useState("");
   const [phone, setPhone] = useState("");
@@ -23,8 +23,10 @@ export default function RegistrationForm({ onLeadAdded }: RegistrationFormProps)
   const [copiedCoupon, setCopiedCoupon] = useState(false);
 
   const roles = [
-    "Docente / Educador",
-    "Director / Sostenedor / Admin",
+    "Director",
+    "Dueño de institución educativa",
+    "Representante legal",
+    "Encargado de TI u otro",
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
