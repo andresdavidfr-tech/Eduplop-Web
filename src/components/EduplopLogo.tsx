@@ -16,12 +16,11 @@ export default function EduplopLogo({ className = "", size = 40 }: LogoProps) {
       className={`${className} select-none`}
     >
       <defs>
-        {/* The beautiful blue, purple, and magenta gradient of the outer C-shape loop */}
+        {/* The beautiful bright blue, purple, and magenta gradient of the outer C-shape loop based on the uploaded logo */}
         <linearGradient id="eduplopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#2563EB" /> {/* Indigo-600 */}
-          <stop offset="50%" stopColor="#4F46E5" /> {/* Indigo-500 */}
-          <stop offset="70%" stopColor="#7C3AED" /> {/* Purple-600 */}
-          <stop offset="100%" stopColor="#DB2777" /> {/* Pink-600 */}
+          <stop offset="0%" stopColor="#3B26F2" /> {/* Electric blue/violet */}
+          <stop offset="50%" stopColor="#8A3CF2" /> {/* Vibrant royal purple */}
+          <stop offset="100%" stopColor="#D926EC" /> {/* Radiant magenta/pink */}
         </linearGradient>
       </defs>
 
@@ -34,42 +33,33 @@ export default function EduplopLogo({ className = "", size = 40 }: LogoProps) {
         fill="none"
       />
 
-      {/* Inner red padlock */}
-      {/* Padlock Body */}
-      <rect
-        x="36"
-        y="46"
-        width="28"
-        height="22"
-        rx="6"
-        fill="#EF4444" 
-      />
-      
-      {/* Padlock Shackle */}
+      {/* 1. School Backpack Handle on Top */}
       <path
-        d="M 42 46 V 39 A 8 8 0 0 1 58 39 V 46"
+        d="M 44 38 C 44 31, 56 31, 56 38"
         stroke="#EF4444"
-        strokeWidth="5"
+        strokeWidth="4.5"
         strokeLinecap="round"
         fill="none"
       />
 
-      {/* Padlock white keyhole slit detail (as seen in screenshots) */}
-      <rect
-        x="45"
-        y="53"
-        width="10"
-        height="8"
-        rx="2"
-        fill="white"
+      {/* 2. Side flaps/attachment wings */}
+      <rect x="32" y="57" width="3" height="6.5" rx="1.2" fill="#EF4444" />
+      <rect x="65" y="57" width="3" height="6.5" rx="1.2" fill="#EF4444" />
+
+      {/* 3. Main School Backpack Body (Rounded shoulders and base) */}
+      <path
+        d="M 35 61 L 35 47 C 35 41, 40 38, 46 38 L 54 38 C 60 38, 65 41, 65 47 L 65 61 C 65 63.8, 63.2 65, 60.5 65 L 39.5 65 C 36.8 65, 35 63.8, 35 61 Z"
+        fill="#EF4444"
       />
-      <rect
-        x="48"
-        y="50"
-        width="4"
-        height="6"
-        rx="1"
-        fill="white"
+
+      {/* 4. White Front Zipper Pocket Contour */}
+      <path
+        d="M 39 65 L 39 52 C 39 49.5, 41.5 48.2, 45 48.2 L 55 48.2 C 58.5 48.2, 61 49.5, 61 52 L 61 65"
+        stroke="white"
+        strokeWidth="2.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );
