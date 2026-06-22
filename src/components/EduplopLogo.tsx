@@ -44,8 +44,8 @@ export default function EduplopLogo({ className = "", size = 40 }: LogoProps) {
       {/* Backpack body */}
       <rect x="35" y="37" width="30" height="27" rx="5" fill="#E8222E" />
 
-      {/* White horizontal strap */}
-      <line x1="35" y1="52" x2="65" y2="52" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      {/* White smile */}
+      <path d="M 40 50 Q 50 58 60 50" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
