@@ -24,8 +24,8 @@ export default function Navbar({ onScrollTo }: NavbarProps) {
         {/* Logo and Name */}
         <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
           <EduplopLogo size={38} />
-          <span className="relative text-xl font-extrabold tracking-tight text-slate-800 font-display flex items-center pr-3.5">
-            Edu<span className="text-indigo-650 text-indigo-600">Plop</span>
+          <span className="relative text-xl font-extrabold tracking-tight text-[#1a1a2e] font-display flex items-center pr-3.5">
+            Edu<span className="text-[#8B35F0]">Plop</span>
             <span className="absolute right-0 top-[6px] flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
