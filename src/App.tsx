@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -7,12 +7,16 @@ import AppScreenshots from "./components/AppScreenshots";
 import AIPlayground from "./components/AIPlayground";
 import RegistrationForm from "./components/RegistrationForm";
 import QuoteForm from "./components/QuoteForm";
+import QuoteSuccessPage from "./components/QuoteSuccessPage";
 import FAQ from "./components/FAQ";
 import AdminConsole from "./components/AdminConsole";
 import Footer from "./components/Footer";
 import SmartBot from "./components/SmartBot";
 
 export default function App() {
+  const [currentPath, setCurrentPath] = useState(() => {
+    return typeof window !== "undefined" ? window.location.pathname : "/";
+  });
   const [refreshLeadsTrigger, setRefreshLeadsTrigger] = useState(0);
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(() => {
     return typeof window !== "undefined" && localStorage.getItem("eduplop_admin_unlocked") === "true";
@@ -20,6 +24,21 @@ export default function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [passcode, setPasscode] = useState("");
   const [authError, setAuthError] = useState("");
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const handleBackToHome = () => {
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", "/");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    }
+  };
 
   const handleScrollToSection = (elementId: string) => {
     const element = document.getElementById(elementId);
@@ -58,6 +77,15 @@ export default function App() {
     setIsAdminUnlocked(false);
     localStorage.removeItem("eduplop_admin_unlocked");
   };
+
+  if (currentPath === "/gracias-presupuesto") {
+    return (
+      <div className="flex flex-col min-h-screen selection:bg-coral-100 selection:text-coral-600">
+        <QuoteSuccessPage onBackToHome={handleBackToHome} />
+        <SmartBot />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-coral-100 selection:text-coral-600">

@@ -74,6 +74,19 @@ export default function QuoteForm({ onLeadAdded }: QuoteFormProps) {
       if (data.success) {
         setSuccessLead(data.lead);
         if (onLeadAdded) onLeadAdded();
+
+        // Guardar en localStorage para redirección a nueva URL y trackeo
+        if (typeof window !== "undefined") {
+          localStorage.setItem("eduplop_last_quote", JSON.stringify({
+            name,
+            school,
+            email,
+            phone: phone || "",
+            studentsCount
+          }));
+          window.history.pushState({}, "", "/gracias-presupuesto");
+          window.dispatchEvent(new PopStateEvent("popstate"));
+        }
       } else {
         throw new Error(data.error || "No se pudo registrar.");
       }
@@ -145,22 +158,17 @@ export default function QuoteForm({ onLeadAdded }: QuoteFormProps) {
         setSuccessLead(fallbackLead);
         if (onLeadAdded) onLeadAdded();
 
-        // Registrar conversión virtual con #presupuesto-gracias
+        // Guardar en localStorage para redirección a nueva URL y trackeo
         if (typeof window !== "undefined") {
-          window.location.hash = "#presupuesto-gracias";
-          
-          if ((window as any).gtag) {
-            try {
-              (window as any).gtag("event", "generate_lead", {
-                event_category: "quote_request",
-                event_label: "Solicitud de Presupuesto EduPlop",
-                value: 5.0,
-                currency: "USD"
-              });
-            } catch (gtagErr) {
-              console.error("Error al disparar conversión gtag:", gtagErr);
-            }
-          }
+          localStorage.setItem("eduplop_last_quote", JSON.stringify({
+            name,
+            school,
+            email,
+            phone: phone || "",
+            studentsCount
+          }));
+          window.history.pushState({}, "", "/gracias-presupuesto");
+          window.dispatchEvent(new PopStateEvent("popstate"));
         }
       } catch (fallbackErr: any) {
         console.error("❌ El fallback de cotizaciones ha fallado:", fallbackErr);
