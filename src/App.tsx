@@ -41,6 +41,14 @@ export default function App() {
   };
 
   const handleScrollToSection = (elementId: string) => {
+    if (elementId === "quote-section" || elementId === "quote-form-container") {
+      if (typeof window !== "undefined") {
+        window.history.pushState({}, "", "/pedirpresupuesto");
+        window.dispatchEvent(new PopStateEvent("popstate"));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+    }
     const element = document.getElementById(elementId);
     if (element) {
       const offset = 80; // Offset for stick-fixed header
@@ -55,6 +63,43 @@ export default function App() {
       });
     }
   };
+
+  const handleScrollToSectionOrRedirect = (elementId: string) => {
+    if (typeof window !== "undefined" && window.location.pathname !== "/") {
+      window.history.pushState({}, "", `/#${elementId}`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
+      }, 150);
+    } else {
+      handleScrollToSection(elementId);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
+      }, 300);
+    }
+  }, [currentPath]);
 
   const handleLeadAdded = () => {
     setRefreshLeadsTrigger((prev) => prev + 1);
@@ -82,6 +127,36 @@ export default function App() {
     return (
       <div className="flex flex-col min-h-screen selection:bg-coral-100 selection:text-coral-600">
         <QuoteSuccessPage onBackToHome={handleBackToHome} />
+        <SmartBot />
+      </div>
+    );
+  }
+
+  if (currentPath === "/pedirpresupuesto") {
+    return (
+      <div className="flex flex-col min-h-screen selection:bg-coral-100 selection:text-coral-600 bg-[#0B0914]">
+        <Navbar onScrollTo={handleScrollToSectionOrRedirect} />
+        <main className="flex-grow pt-24">
+          <div className="max-w-4xl mx-auto px-4 py-8 text-center space-y-4">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/25 px-3.5 py-1 text-xs font-bold uppercase tracking-wider">
+              Solicitud Oficial de Cotización
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+              Precios Preferenciales para Colegios Pioneros
+            </h1>
+            <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+              Completa el formulario de contacto para recibir un presupuesto formal a la medida de tu colegio, con el 50% de descuento vitalicio incorporado.
+            </p>
+          </div>
+          <QuoteForm onLeadAdded={handleLeadAdded} />
+        </main>
+        {isAdminUnlocked && (
+          <AdminConsole refreshTrigger={refreshLeadsTrigger} onLock={handleLockAdmin} />
+        )}
+        <Footer 
+          onScrollTo={handleScrollToSectionOrRedirect} 
+          onClickAdmin={() => setShowAuthModal(true)}
+        />
         <SmartBot />
       </div>
     );
