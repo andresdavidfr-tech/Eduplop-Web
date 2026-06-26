@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ArrowRight, Sparkles, ShieldCheck, Heart, Users, ExternalLink } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck, Heart, Users, ExternalLink, Calculator } from "lucide-react";
 import EduplopLogo from "./EduplopLogo";
 
 interface HeroProps {
@@ -85,18 +85,28 @@ export default function Hero({ onScrollTo }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2"
+              className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center lg:justify-start pt-2"
             >
               <button
                 onClick={() => onScrollTo("pre-sale-form")}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-coral-500 px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-coral-500/20 hover:bg-coral-600 transition cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-coral-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-coral-500/20 hover:bg-coral-600 transition cursor-pointer"
               >
                 Inscribirse a la Preventa (-50%)
                 <ArrowRight className="h-5 w-5" />
               </button>
+              
+              <button
+                onClick={() => onScrollTo("quote-section")}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#8A3CF2] to-[#3B26F2] px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-500/20 hover:brightness-110 transition cursor-pointer relative overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-white/5 animate-pulse" />
+                Pedir Presupuesto a Medida
+                <Calculator className="h-5 w-5" />
+              </button>
+
               <button
                 onClick={() => onScrollTo("app-tour")}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-base font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-base font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition cursor-pointer"
               >
                 Ver Tour de la App
                 <ArrowRight className="h-5 w-5 rotate-90" />

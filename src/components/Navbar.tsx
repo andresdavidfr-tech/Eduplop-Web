@@ -15,6 +15,7 @@ export default function Navbar({ onScrollTo }: NavbarProps) {
     { name: "Tour de la App", id: "app-tour" },
     { name: "Demostrador IA", id: "ai-playground" },
     { name: "Beneficios de Preventa", id: "pre-sale" },
+    { name: "Pedir Presupuesto", id: "quote-section" },
     { name: "Preguntas", id: "faq" },
   ];
 
@@ -57,6 +58,12 @@ export default function Navbar({ onScrollTo }: NavbarProps) {
             Ver App en Vivo
             <ArrowUpRight className="h-4 w-4" />
           </a>
+          <button
+            onClick={() => onScrollTo("quote-section")}
+            className="inline-flex items-center gap-1.5 rounded-xl border-2 border-[#8A3CF2]/40 bg-white px-4 py-2 text-sm font-semibold text-[#8A3CF2] shadow-sm hover:bg-[#8A3CF2]/10 hover:border-[#8A3CF2] transition duration-150 cursor-pointer"
+          >
+            Pedir Presupuesto
+          </button>
           <button
             onClick={() => onScrollTo("pre-sale-form")}
             className="inline-flex items-center gap-1.5 rounded-xl bg-coral-500 px-4.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-coral-600 transition duration-150 cursor-pointer"
@@ -119,6 +126,15 @@ export default function Navbar({ onScrollTo }: NavbarProps) {
                   Ver App en Vivo
                   <ArrowUpRight className="h-4 w-4" />
                 </a>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    onScrollTo("quote-section");
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-xl border-2 border-[#8A3CF2]/40 bg-white py-2.5 text-sm font-semibold text-[#8A3CF2] hover:bg-[#8A3CF2]/10 cursor-pointer"
+                >
+                  Pedir Presupuesto a Medida
+                </button>
                 <button
                   onClick={() => {
                     setIsOpen(false);

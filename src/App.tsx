@@ -6,6 +6,7 @@ import Features from "./components/Features";
 import AppScreenshots from "./components/AppScreenshots";
 import AIPlayground from "./components/AIPlayground";
 import RegistrationForm from "./components/RegistrationForm";
+import QuoteForm from "./components/QuoteForm";
 import FAQ from "./components/FAQ";
 import AdminConsole from "./components/AdminConsole";
 import Footer from "./components/Footer";
@@ -78,6 +79,9 @@ export default function App() {
 
         {/* Secure lead registration form (50% presale off) */}
         <RegistrationForm onLeadAdded={handleLeadAdded} />
+
+        {/* Custom custom quote / budget request form for schools */}
+        <QuoteForm onLeadAdded={handleLeadAdded} />
 
         {/* Dynamic FAQ Accordion */}
         <FAQ />
